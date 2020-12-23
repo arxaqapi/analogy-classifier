@@ -1,10 +1,6 @@
 #### workflow
 cnn_model/
-data
-data/google
-data/glove.6B
-
-data/*.csv
+data/
 
 #### Python
 # Byte-compiled / optimized / DLL files
