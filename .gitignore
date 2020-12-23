@@ -1,5 +1,7 @@
 #### workflow
 cnn_model/
+data
+data/google
 data/glove.6B
 
 data/*.csv
