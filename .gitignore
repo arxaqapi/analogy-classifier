@@ -1,3 +1,10 @@
+#### workflow
+cnn_model/
+data/glove.6B
+
+data/*.csv
+
+#### Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
