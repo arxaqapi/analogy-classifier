@@ -50,6 +50,7 @@ def extendGoogleDataset(path):
         X = []
         f_name = []
         for row in csv_reader:
+            line_count += 1
             if row[0] == ":":
                 f_name.append(row[1])
             else:

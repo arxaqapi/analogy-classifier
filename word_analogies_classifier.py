@@ -54,9 +54,9 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
 
     # Parameters
     input_shape = embedded_dataset[0].shape
-    batch_size = int(len(embedded_dataset) / 10)
+    batch_size = 32#int(len(embedded_dataset) / 10)
     fold = 1
-    verbosity = 0
+    verbosity = 1
 
     # Define per-fold score containers
     acc_per_fold = []
@@ -106,4 +106,4 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
     print('------------------------------------------------------------------------')
 
 
-train(utils.extendGoogleDataset("data/google/questions-words.txt"), epochs=10, folds=10, embedding_size=50)
+train(utils.extendGoogleDataset("data/google/questions-words.txt"), epochs=10, folds=10, embedding_size=100)
