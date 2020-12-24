@@ -5,5 +5,5 @@ wget http://download.tensorflow.org/data/questions-words.txt
 mkdir -p data/glove.6B/
 mkdir -p data/google/
 
-mv glove.6B.zip data/glove.6b/
+mv glove.6B.zip data/glove.6B/
 mv questions-words.txt data/google/
