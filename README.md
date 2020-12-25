@@ -15,3 +15,10 @@ And the word dataset used is the Google's ```question-words.txt``` file
 ## Requirements
 To get all the files and the correct folder structure, lauch the ```dependencies.sh``` script.
 
+## Run the CNN
+* Choose the embedding size at ```line 117``` in ```word_analogy_classifier.py```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 119```
+* Start the word_analogy_classifier.py script with the following command line:
+```
+$ python3 word_analogies_classifier.py
+```

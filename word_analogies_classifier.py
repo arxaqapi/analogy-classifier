@@ -35,7 +35,7 @@ def save(model, name):
         '.keras')
 
 
-def train(dataset, epochs=10, folds=10, embedding_size=50):
+def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
     """Train the convolutional neural net and outputs the accuracy
 
     Args:
@@ -66,7 +66,6 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
 
     # Parameters
     input_shape = embedded_dataset[0].shape
-    batch_size = 32
     fold = 1
     verbosity = 1
 
@@ -121,5 +120,6 @@ train(
         "data/google/questions-words.txt", embedding_size=EMBEDDING_SIZE
     ),
     epochs=10,
+    batch_size=32,
     folds=10,
     embedding_size=EMBEDDING_SIZE)
