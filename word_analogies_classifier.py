@@ -52,12 +52,6 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
         f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
     random.seed()
 
-    # Parameters
-    input_shape = embedded_dataset[0].shape
-    batch_size = 32
-    fold = 1
-    verbosity = 1
-
     # KFold init
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
 
@@ -69,6 +63,12 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
     # Define per-fold score containers
     acc_per_fold = []
     loss_per_fold = []
+
+    # Parameters
+    input_shape = embedded_dataset[0].shape
+    batch_size = 32
+    fold = 1
+    verbosity = 1
 
     print("---- START ----")
     for train_index, test_index in kf.split(embedded_dataset):
