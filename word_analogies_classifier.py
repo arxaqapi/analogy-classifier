@@ -42,19 +42,19 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
         embedding_size (int, optional): Size of the word vectors, can be one the following 50, 100, 200, 300. Defaults to 50.
     """
 
-    X, Y = dataset
-    
+    embedded_dataset, Y = dataset
+
     # embedd the dataset
-    print("[Log] - Embedding starts")
-    embedded_dataset = utils.embedd_dataset(X, utils.glove_dict(embedding_size))
-    print(f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
+    print(
+        f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
     random.seed()
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
-    embedded_dataset = embedded_dataset.reshape(len(X), embedding_size, 4, 1)
+    embedded_dataset = np.reshape(
+        embedded_dataset, (embedded_dataset.shape[0], embedding_size, 4, 1))
 
     # Parameters
     input_shape = embedded_dataset[0].shape
-    batch_size = 32#int(len(embedded_dataset) / 10)
+    batch_size = 32
     fold = 1
     verbosity = 1
 
@@ -64,15 +64,15 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
 
     print("---- START ----")
     for train_index, test_index in kf.split(embedded_dataset):
-        
+
         X_train = embedded_dataset[train_index]
         y_train = Y[train_index]
-        
+
         X_test = embedded_dataset[test_index]
         y_test = Y[test_index]
-        
+
         cnn = cnn_model(input_shape)
-        
+
         history = cnn.fit(
             X_train,
             y_train,
@@ -106,4 +106,12 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
     print('------------------------------------------------------------------------')
 
 
-train(utils.extendGoogleDataset("data/google/questions-words.txt"), epochs=10, folds=10, embedding_size=100)
+EMBEDDING_SIZE = 100
+
+train(
+    utils.extendGoogleDataset(
+        "data/google/questions-words.txt", embedding_size=EMBEDDING_SIZE
+    ),
+    epochs=10,
+    folds=10,
+    embedding_size=EMBEDDING_SIZE)

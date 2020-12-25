@@ -1,7 +1,7 @@
 #### workflow
 cnn_model/
 data/
-# test/
+test/
 
 #### Python
 # Byte-compiled / optimized / DLL files

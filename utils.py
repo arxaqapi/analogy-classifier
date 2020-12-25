@@ -1,84 +1,66 @@
 import csv
 import numpy as np
 
-def abcd_valid_extended(row):
-    a = row[0]
-    b = row[1]
-    c = row[2]
-    d = row[3]
+def abcd_valid_extended(row, embedding_dict):
+    a = embedding_dict[row[0].lower()]
+    b = embedding_dict[row[1].lower()]
+    c = embedding_dict[row[2].lower()]
+    d = embedding_dict[row[3].lower()]
     return [
-        row,
-        [a, c, b, d],
-        [c, d, a, b],
-        [c, a, d, b],
-        [d, b, c, a],
-        [d, c, b, a],
-        [b, a, d, c],
-        [b, d, a, c]
+        np.stack([a, b, c, d]).T,
+        np.stack([a, c, b, d]).T,
+        np.stack([c, d, a, b]).T,
+        np.stack([c, a, d, b]).T,
+        np.stack([d, b, c, a]).T,
+        np.stack([d, c, b, a]).T,
+        np.stack([b, a, d, c]).T,
+        np.stack([b, d, a, c]).T
     ]
 
-def bacd_invalid_extended(row):
+def bacd_invalid_extended(row, embedding_dict):
     a = row[0]
     b = row[1]
     c = row[2]
     d = row[3]
-    return abcd_valid_extended([b, a, c, d])
+    return abcd_valid_extended([b, a, c, d], embedding_dict)
 
-def cbad_invalid_extended(row):
+def cbad_invalid_extended(row, embedding_dict):
     a = row[0]
     b = row[1]
     c = row[2]
     d = row[3]
-    return abcd_valid_extended([c, b, a, d])
+    return abcd_valid_extended([c, b, a, d], embedding_dict)
 
-def concat(eq_list, valid=1):
-    for eq in eq_list:
-        eq.append(valid)
 
-def extendGoogleDataset(path):
+def extendGoogleDataset(path, embedding_size):
     """
     - open the selected dataset (here the google dataset)
-    - reads it and extends the data 
-    - put the data in 2 variables, (X_final, y)
+    - reads it, extends and embedd the data 
+    - put the data in 2 variables, (X, y)
     path = path to the dataset
     """
-    X_final = []
+    embeddings_dict = glove_dict(embedding_size)
+
+    X = []
     y = []
+
     with open(path, 'r') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=' ')
         line_count = 0
-        X = []
-        f_name = []
         for row in csv_reader:
-            line_count += 1
-            if row[0] == ":":
-                f_name.append(row[1])
-            else:
-                X.append(row)
-    with open("data/embedded_words.csv", mode='w') as output_file:
-            writer = csv.writer(output_file, delimiter=' ')
-            for equation in X:
-                # equation is a list of words
-                abcd = abcd_valid_extended(equation)
-                X_final.extend(abcd)
-
-                bacd = bacd_invalid_extended(equation)
-                X_final.extend(bacd)
-                
-                cbad = cbad_invalid_extended(equation)
-                X_final.extend(cbad)
-
-                writer.writerows(abcd)
+            if row[0] != ":":
+                abcd = abcd_valid_extended(row, embeddings_dict)
+                bacd = bacd_invalid_extended(row, embeddings_dict)
+                cbad = cbad_invalid_extended(row, embeddings_dict)
+                X.extend(abcd)
+                X.extend(bacd)
+                X.extend(cbad)
                 y.extend([[1]] * 8)
-                writer.writerows(bacd)
                 y.extend([[0]] * 8)
-                writer.writerows(cbad)
                 y.extend([[0]] * 8)
-    with open("data/y_embedded_words.csv", mode='w') as output_file:
-        write = csv.writer(output_file, delimiter=' ')
-        for row in y:
-            write.writerow(row)
-    return (np.array(X_final), np.array(y))
+            line_count += 1
+            
+    return (np.array(X), np.array(y))
 
 def glove_dict(embedding_size):
     """Return the dictionnary containing each word vector
@@ -97,17 +79,3 @@ def glove_dict(embedding_size):
             vec = np.asarray(values[1:], "float32")
             embeddings_dict[word] = vec
     return embeddings_dict
-
-def embedd_dataset(dataset, embeddings_dict):
-    """
-        The dataset is in the form:
-            X is a list of rows
-            with each row being a list of words
-    """
-    embedded_dataset = []
-    for row in dataset:
-        embedded_row = []
-        for word in row:
-            embedded_row.append(embeddings_dict[word.lower()])
-        embedded_dataset.append(embedded_row)
-    return np.array(embedded_dataset)
