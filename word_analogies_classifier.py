@@ -28,8 +28,11 @@ def cnn_model(shape=(50, 4, 1)):
 
 def save(model, name):
     today = datetime.now()
-    model.save("cnn_model/" +
-               str(today.strftime("%d_%m_%Y__%H_%M_%S")) + name + '.h5')
+    model.save(
+        "cnn_model/" +
+        str(today.strftime("%d_%m_%Y__%H_%M_%S")) + 
+        name + 
+        '.keras')
 
 
 def train(dataset, epochs=10, folds=10, embedding_size=50):
@@ -48,9 +51,6 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
     print(
         f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
     random.seed()
-    kf = KFold(n_splits=folds, shuffle=True, random_state=5)
-    embedded_dataset = np.reshape(
-        embedded_dataset, (embedded_dataset.shape[0], embedding_size, 4, 1))
 
     # Parameters
     input_shape = embedded_dataset[0].shape
@@ -58,6 +58,14 @@ def train(dataset, epochs=10, folds=10, embedding_size=50):
     fold = 1
     verbosity = 1
 
+    # KFold init
+    kf = KFold(n_splits=folds, shuffle=True, random_state=5)
+
+    # Prepare data for convolutional layer
+    embedded_dataset = np.reshape(
+        embedded_dataset,
+        (embedded_dataset.shape[0], embedding_size, 4, 1)
+    )
     # Define per-fold score containers
     acc_per_fold = []
     loss_per_fold = []

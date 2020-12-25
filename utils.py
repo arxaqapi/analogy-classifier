@@ -1,6 +1,24 @@
 import csv
 import numpy as np
 
+def glove_dict(embedding_size):
+    """Return the dictionnary containing each word vector
+
+    Args:
+        embedding_size (int): the size of the word vectors = 50, 100, 200 or 300
+
+    Returns:
+        dict: the dictionnar containing all word vectors of size embedding_size
+    """
+    embeddings_dict = {}
+    with open("data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
+        for line in f:
+            values = line.split()
+            word = values[0]
+            vec = np.asarray(values[1:], "float32")
+            embeddings_dict[word] = vec
+    return embeddings_dict
+
 def abcd_valid_extended(row, embedding_dict):
     a = embedding_dict[row[0].lower()]
     b = embedding_dict[row[1].lower()]
@@ -32,7 +50,7 @@ def cbad_invalid_extended(row, embedding_dict):
     return abcd_valid_extended([c, b, a, d], embedding_dict)
 
 
-def extendGoogleDataset(path, embedding_size):
+def extendGoogleDataset(path, embedding_size=50):
     """
     - open the selected dataset (here the google dataset)
     - reads it, extends and embedd the data 
@@ -61,21 +79,3 @@ def extendGoogleDataset(path, embedding_size):
             line_count += 1
             
     return (np.array(X), np.array(y))
-
-def glove_dict(embedding_size):
-    """Return the dictionnary containing each word vector
-
-    Args:
-        embedding_size (int): the size of the word vectors = 50, 100, 200 or 300
-
-    Returns:
-        dict: the dictionnar containing all word vectors of size embedding_size
-    """
-    embeddings_dict = {}
-    with open("data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
-        for line in f:
-            values = line.split()
-            word = values[0]
-            vec = np.asarray(values[1:], "float32")
-            embeddings_dict[word] = vec
-    return embeddings_dict
