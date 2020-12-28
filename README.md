@@ -8,7 +8,7 @@ This repository contains a minified version of the word analogy classifier descr
 
 ## Details
 The word embedding is done with GloVe:
-* nlp.stanford.edu/data/
+* https://nlp.stanford.edu/projects/glove/
 
 And the word dataset used is the Google's ```question-words.txt``` file
 * http://download.tensorflow.org/data/questions-words.txt

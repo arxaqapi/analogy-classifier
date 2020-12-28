@@ -64,7 +64,6 @@ def extendGoogleDataset(path, embedding_size=50):
 
     with open(path, 'r') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=' ')
-        line_count = 0
         for row in csv_reader:
             if row[0] != ":":
                 abcd = abcd_valid_extended(row, embeddings_dict)
@@ -76,6 +75,5 @@ def extendGoogleDataset(path, embedding_size=50):
                 y.extend([[1]] * 8)
                 y.extend([[0]] * 8)
                 y.extend([[0]] * 8)
-            line_count += 1
             
     return (np.array(X), np.array(y))
