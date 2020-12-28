@@ -1,6 +1,9 @@
 import csv
 import numpy as np
 
+from datetime import datetime
+
+
 def glove_dict(embedding_size):
     """Return the dictionnary containing each word vector
 
@@ -11,13 +14,14 @@ def glove_dict(embedding_size):
         dict: the dictionnar containing all word vectors of size embedding_size
     """
     embeddings_dict = {}
-    with open("data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
+    with open("../data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
         for line in f:
             values = line.split()
             word = values[0]
             vec = np.asarray(values[1:], "float32")
             embeddings_dict[word] = vec
     return embeddings_dict
+
 
 def abcd_valid_extended(row, embedding_dict):
     a = embedding_dict[row[0].lower()]
@@ -35,12 +39,14 @@ def abcd_valid_extended(row, embedding_dict):
         np.stack([b, d, a, c]).T
     ]
 
+
 def bacd_invalid_extended(row, embedding_dict):
     a = row[0]
     b = row[1]
     c = row[2]
     d = row[3]
     return abcd_valid_extended([b, a, c, d], embedding_dict)
+
 
 def cbad_invalid_extended(row, embedding_dict):
     a = row[0]
@@ -75,5 +81,14 @@ def extendGoogleDataset(path, embedding_size=50):
                 y.extend([[1]] * 8)
                 y.extend([[0]] * 8)
                 y.extend([[0]] * 8)
-            
+
     return (np.array(X), np.array(y))
+
+
+def save(model, name):
+    today = datetime.now()
+    model.save(
+        "cnn_model/" +
+        str(today.strftime("%d_%m_%Y__%H_%M_%S")) +
+        name +
+        '.keras')

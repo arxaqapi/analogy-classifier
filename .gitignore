@@ -2,6 +2,7 @@
 cnn_model/
 data/
 test/
+todo.txt
 
 #### Python
 # Byte-compiled / optimized / DLL files

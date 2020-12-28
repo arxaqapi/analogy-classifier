@@ -2,9 +2,12 @@
 
 This repository contains a minified version of the word analogy classifier described in the following paper:
 
-
 * Lim S., Prade H., Richard G. (2019) Solving Word Analogies: A Machine Learning Perspective. In: Kern-Isberner G., Ognjanović Z. (eds) Symbolic and Quantitative Approaches to Reasoning with Uncertainty. ECSQARU 2019. Lecture Notes in Computer Science, vol 11726. Springer, Cham. https://doi.org/10.1007/978-3-030-29765-7_20
 * https://github.com/gillesirit/analogy
+
+This version can be found in the ```word/``` directory
+
+The sentence ananoly classification task can be found in the ```sentence/```
 
 ## Details
 The word embedding is done with GloVe:
@@ -16,14 +19,22 @@ And the word dataset used is the Google's ```question-words.txt``` file
 To get all the files and the correct folder structure, lauch the ```dependencies.sh``` script.
 
 ## Run the CNN
-* Choose the embedding size at ```line 117``` in ```word_analogy_classifier.py```
-* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 119```
-* Start the word_analogy_classifier.py script with the following command line:
+#### Word classification task
+* Choose the embedding size at ```line 118``` in ```main_word_classification.py```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 120```
+* Start the main_word_classification.py script with the following command line:
 ```
-$ python3 word_analogies_classifier.py
+$ python3 main_word_classification.py
+```
+#### Sentence classification task
+* Choose the embedding size at ```line 102``` in ```main_sentence_classification.py```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 104```
+* Start the main_sentence_classification.py script with the following command line:
+```
+$ python3 main_sentence_classification.py
 ```
 
-## Example
+## Example for the word classification task
 * These are the final results obtained after running the CNN
 ```
 Score per fold

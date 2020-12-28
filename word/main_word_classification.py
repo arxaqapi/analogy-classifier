@@ -1,9 +1,8 @@
 import utils
 
 import random
-from datetime import datetime
-
 import numpy as np
+
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Flatten, Dense, Activation
 from sklearn.model_selection import KFold
@@ -11,28 +10,30 @@ from sklearn.model_selection import KFold
 
 def cnn_model(shape=(50, 4, 1)):
     model = Sequential([
-        Conv2D(filters=128, kernel_size=(1, 2),
-               strides=(1, 2), input_shape=shape),
+        Conv2D(
+            filters=128,
+            kernel_size=(1, 2),
+            strides=(1, 2),
+            input_shape=shape
+        ),
         BatchNormalization(axis=-1),
         Activation('relu'),
-        Conv2D(filters=64, kernel_size=(2, 2), strides=(2, 2)),
+        Conv2D(
+            filters=64,
+            kernel_size=(2, 2),
+            strides=(2, 2)
+        ),
         BatchNormalization(axis=-1),
         Activation('relu'),
         Flatten(),
         Dense(1, activation='sigmoid')
     ])
-    model.compile(loss='binary_crossentropy', metrics=[
-                  'accuracy'], optimizer='adam')
+    model.compile(
+        loss='binary_crossentropy',
+        metrics=['accuracy'],
+        optimizer='adam'
+    )
     return model
-
-
-def save(model, name):
-    today = datetime.now()
-    model.save(
-        "cnn_model/" +
-        str(today.strftime("%d_%m_%Y__%H_%M_%S")) + 
-        name + 
-        '.keras')
 
 
 def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
@@ -44,14 +45,13 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
         folds (int, optional): Number of folds for the KFold model selection. Defaults to 10.
         embedding_size (int, optional): Size of the word vectors, can be one the following 50, 100, 200, 300. Defaults to 50.
     """
-
     embedded_dataset, Y = dataset
 
     # embedd the dataset
     print(
         f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
-    random.seed()
 
+    random.seed()
     # KFold init
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
 
@@ -95,9 +95,11 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
         )
         print(
             f'Score per fold n°{fold}: {cnn.metrics_names[0]} of {scores[0]}; {cnn.metrics_names[1]} of {scores[1]*100}%')
+
         acc_per_fold.append(scores[1] * 100)
         loss_per_fold.append(scores[0])
-        save(cnn, f"fold_{fold}")
+
+        utils.save(cnn, f"fold_{fold}")
         fold += 1
 
     print('------------------------------------------------------------------------')
@@ -117,9 +119,11 @@ EMBEDDING_SIZE = 100
 
 train(
     utils.extendGoogleDataset(
-        "data/google/questions-words.txt", embedding_size=EMBEDDING_SIZE
+        "../data/google/questions-words.txt",
+        embedding_size=EMBEDDING_SIZE
     ),
     epochs=10,
     batch_size=32,
     folds=10,
-    embedding_size=EMBEDDING_SIZE)
+    embedding_size=EMBEDDING_SIZE
+)
