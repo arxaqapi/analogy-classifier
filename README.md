@@ -20,6 +20,8 @@ To get all the files and the correct folder structure, lauch the ```dependencies
 
 ## Run the CNN
 #### Word classification task
+* Go into the ```word/``` directory
+```$ cd word/```
 * Choose the embedding size at ```line 118``` in ```main_word_classification.py```
 * Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 120```
 * Start the main_word_classification.py script with the following command line:
@@ -27,6 +29,8 @@ To get all the files and the correct folder structure, lauch the ```dependencies
 $ python3 main_word_classification.py
 ```
 #### Sentence classification task
+* Go into the ```sentence/``` directory
+```$ cd sentence/```
 * Choose the embedding size at ```line 102``` in ```main_sentence_classification.py```
 * Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 104```
 * Start the main_sentence_classification.py script with the following command line:
