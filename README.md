@@ -7,7 +7,7 @@ This repository contains a minified version of the word analogy classifier descr
 
 This version can be found in the ```word/``` directory
 
-The sentence ananoly classification task can be found in the ```sentence/```
+The sentence analogy classification task can be found in the ```sentence/```
 
 ## Details
 The word embedding is done with GloVe:
