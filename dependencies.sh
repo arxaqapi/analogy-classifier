@@ -9,3 +9,5 @@ mv glove.6B.zip data/glove.6B/
 mv questions-words.txt data/google/
 
 unzip data/glove.6B/glove.6B.zip -d data/glove.6B/
+
+mkdir -p sentence/temp/
