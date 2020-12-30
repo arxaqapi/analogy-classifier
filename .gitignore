@@ -4,6 +4,9 @@ data/
 test/
 todo.txt
 
+# PDTB v2
+*.pipe
+
 #### Python
 # Byte-compiled / optimized / DLL files
 __pycache__/
