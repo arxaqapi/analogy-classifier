@@ -2,7 +2,7 @@
 
 ## Prerequisites
 * The PDTB versin used here is the 2.0 PDTB corpus
-* Be sure to execute the ```../dependencies.sh``` script before starting anything
+* Be sure to execute the ```../dependencies.sh``` script before starting anything (to get GloVe and google words)
 * To be able to work, you have to copy all the 24 directories containing the pre-processed data of the PDTB database into the ```pdtb/``` folder (there should be a perl script pre-processing the raw data into a bunch of folders named from ```00/``` to ```24/```, the files inside these folders should have the ```.pipe``` extension)
 
 ```
@@ -14,6 +14,10 @@
 │   ├── 23
 │   └── 24
 ```
+## Files
+* The dataset of quadruples is done dynamically via pdtb_preprocess.py leading to a csv file explicit_sentence_database.csv.
+* main_pdtb_sentence_classification.py uses explicit_sentence_database.csv as training set.
+
 ## Usage
 * Choose the embedding size and the path where the dataset used in the cnn will be stored
 ```
