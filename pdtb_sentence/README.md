@@ -13,7 +13,17 @@
     │   ├── 23
     │   └── 24
 
-
+## Usage
+* Choose the embedding size and the path where the dataset used in the cnn will be stored
+```
+EMBEDDING_SIZE = 50
+PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
+```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 118```
+* Start the main_pdtb_sentence_classification.py script with the following command line:
+```
+$ python3 main_pdtb_sentence_classification.py
+```
 
 ## Details
 If a specific word cannot be embedded using the GloVe database (i.e. the word does not have a precomputed vector), We throw that example away, so we get rid of the whole line containing the quadruples of sentences

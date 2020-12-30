@@ -1,3 +1,5 @@
+import pdtb_preprocess 
+import gen_sentence_db
 from extend_sentences import extend_embedd_sentences
 
 import random
@@ -102,8 +104,6 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
 EMBEDDING_SIZE = 50
 PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
 
-import pdtb_preprocess 
-import gen_sentence_db
 
 if not os.path.isfile("explicit_sentence_database.csv"):
     # .pipe -> single csv

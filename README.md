@@ -37,6 +37,11 @@ $ python3 main_word_classification.py
 ```
 $ python3 main_sentence_classification.py
 ```
+#### Penn Discourse Treebank Sentence classification task
+* Go into the ```pdtb_sentence/``` directory
+```$ cd pdtb_sentence/```
+* Please read and meet all the requirements layed out in the ```pdtb_sentence/README.md``` file
+
 
 ## Example for the word classification task
 * These are the final results obtained after running the CNN
