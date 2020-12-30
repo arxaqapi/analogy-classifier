@@ -27,7 +27,7 @@ $ python3 main_pdtb_sentence_classification.py
 ```
 
 ## Details
-If a specific word cannot be embedded using the GloVe database (i.e. the word does not have a precomputed vector), We throw that example away, so we get rid of the whole line containing the quadruples of sentences
+If a specific word w belonging to a sentence s cannot be embedded using the GloVe database (i.e. the word w does not have a precomputed vector), we throw the whole sentence away and we do not use sentence s anymore to build quadruples of analogical sentences.
 
 ### Relation types (R)
 * Explicit - Explicit Relations
