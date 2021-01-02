@@ -112,6 +112,7 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
         t_neg, f_pos, f_neg, t_pos = confusion_matrix(
             y_test, y_predicted
         ).ravel()
+        confusion_matrices.append([t_neg, f_pos, f_neg, t_pos])
         print(
             f"t_neg = {t_neg} | f_pos = {f_pos} | f_neg = {f_neg} | t_pos = {t_pos}")
 
