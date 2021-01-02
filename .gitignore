@@ -6,6 +6,7 @@ todo.txt
 
 # PDTB v2
 *.pipe
+*/pdtb_split/*
 
 #### Python
 # Byte-compiled / optimized / DLL files

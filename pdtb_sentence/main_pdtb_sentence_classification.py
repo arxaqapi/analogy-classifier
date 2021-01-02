@@ -1,4 +1,4 @@
-import pdtb_preprocess 
+import pdtb_preprocess
 import gen_sentence_db
 from extend_sentences import extend_embedd_sentences
 
@@ -8,8 +8,12 @@ from datetime import datetime
 
 import numpy as np
 from tensorflow.keras import Sequential
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Flatten, Dense, Activation
 from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix, classification_report, precision_score, recall_score, f1_score
+
+import tensorflow as tf
 
 
 def cnn_model(shape=(50, 4, 1)):
@@ -52,7 +56,6 @@ def save(model, name):
 def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
     embedded_dataset, Y = dataset
 
-    # embedd the dataset
     print(
         f"[Log] - Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}")
     random.seed()
@@ -60,16 +63,23 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
     # KFold init
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
 
+    print(f"[Log] - Pre-Shape of the dataset = {embedded_dataset.shape}")
     # Prepare data for convolutional layer
     embedded_dataset = np.reshape(
         embedded_dataset,
         (embedded_dataset.shape[0], embedding_size, 4, 1)
     )
-
+    print(f"[Log] - Shape of the dataset = {embedded_dataset.shape}")
     # Parameters
     input_shape = embedded_dataset[0].shape
     fold = 1
     verbosity = 1
+    # Metrics
+    confusion_matrices = []
+    precision_scores = []
+    recall_scores = []
+    f1_scores = []
+    acc_per_fold = []
 
     print("[Log] ---- START ----")
     for train_index, test_index in kf.split(embedded_dataset):
@@ -89,39 +99,72 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
             batch_size=batch_size,
             epochs=epochs,
             verbose=verbosity
+            # callbacks=callbacks
         )
         # Metrics
-        # scores =
-        cnn.evaluate(
+        scores = cnn.evaluate(
             X_test,
             y_test,
             verbose=verbosity
         )
+        y_predicted = cnn.predict(X_test)
+        y_predicted = np.around(np.array(y_predicted), 0)
+        t_neg, f_pos, f_neg, t_pos = confusion_matrix(
+            y_test, y_predicted
+        ).ravel()
+        print(
+            f"t_neg = {t_neg} | f_pos = {f_pos} | f_neg = {f_neg} | t_pos = {t_pos}")
+
+        report = classification_report(y_test, y_predicted)
+        print(report)
+
+        precision_scores.append(precision_score(y_test, y_predicted))
+        recall_scores.append(recall_score(y_test, y_predicted))
+        f1_scores.append(f1_score(y_test, y_predicted))
+        acc_per_fold.append(scores[1] * 100)
+
         save(cnn, f"fold_{fold}")
         fold += 1
+    print(
+        f"Cross folds average accuracy for {epochs} epochs : {np.mean(acc_per_fold)} and standart deviation = {np.std(acc_per_fold)}")
+    print(
+        f"Average precision : {np.mean(precision_scores)} and standart deviation = {np.std(precision_scores)}")
+    print(
+        f"Average recall : {np.mean(recall_scores)} and standart deviation = {np.std(recall_scores)}")
+    print(
+        f"Average f1 : {np.mean(f1_scores)} and standart deviation = {np.std(f1_scores)}")
 
 
-EMBEDDING_SIZE = 50
+EMBEDDING_SIZE = 300
+K = 2
 PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
 
+PREFIX = "../data/fasttext/"
+FT_BIG = PREFIX + "crawl-300d-2M.vec"
+FT_SMALL = PREFIX + "wiki-news-300d-1M.vec"
+GLOVE_DATA = "../data/glove.6B/"
 
 if not os.path.isfile("explicit_sentence_database.csv"):
     # .pipe -> single csv
     pdtb_preprocess.create_single_csv_from_pdtb(PATH_TO_CSV)
     # split into sept csv's
-    data_dict = pdtb_preprocess.split_single_csv_into_relation_type_files(PATH_TO_CSV)
+    data_dict = pdtb_preprocess.split_single_csv_into_relation_type_files(
+        PATH_TO_CSV)
     # generate explicit sentence database
-    gen_sentence_db.randomly_generate_n_sentence_quadruples(data_dict, 40000)
+    gen_sentence_db.randomly_generate_n_sentence_quadruples(
+        data_dict, 15000)  # 40000
     print("[Log] - Initialization finished")
-
 
 train(
     extend_embedd_sentences(
         "explicit_sentence_database.csv",
-        embedding_size=EMBEDDING_SIZE
-        ),
+        embedding_size=EMBEDDING_SIZE,
+        word_vectors_path=FT_SMALL,
+        k=K,
+        type="DCT"
+    ),
     epochs=10,
-    batch_size=32,
+    batch_size=64,
     folds=10,
-    embedding_size=EMBEDDING_SIZE
+    embedding_size=EMBEDDING_SIZE*K
 )

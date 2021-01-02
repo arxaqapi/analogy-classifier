@@ -39,3 +39,8 @@ If a specific word w belonging to a sentence s cannot be embedded using the GloV
 * AltLex - Alternate Lexicalizations
 * EntRel - Entity Relations
 * NoRel - No Relations
+
+
+# References
+* Almarwani, Nada, Hanan Aldarmaki, and Mona Diab. "Efficient Sentence Embedding using Discrete Cosine Transform."
+* T. Mikolov, E. Grave, P. Bojanowski, C. Puhrsch, A. Joulin. Advances in Pre-Training Distributed Word Representations
