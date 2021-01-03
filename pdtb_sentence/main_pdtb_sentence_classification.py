@@ -53,7 +53,10 @@ def save(model, name):
         '.keras')
 
 
-def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
+def train(dataset, sentence_embedding_method, k, epochs=10, batch_size=32, folds=10, embedding_size=50):
+    if sentence_embedding_method == 'DCT':
+        embedding_size *= k
+
     embedded_dataset, Y = dataset
 
     print(
@@ -136,14 +139,7 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
         f"Average f1 : {np.mean(f1_scores)} and standart deviation = {np.std(f1_scores)}")
 
 
-EMBEDDING_SIZE = 300
-K = 2
 PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
-
-PREFIX = "../data/fasttext/"
-FT_BIG = PREFIX + "crawl-300d-2M.vec"
-FT_SMALL = PREFIX + "wiki-news-300d-1M.vec"
-GLOVE_DATA = "../data/glove.6B/"
 
 if not os.path.isfile("explicit_sentence_database.csv"):
     # .pipe -> single csv
@@ -153,19 +149,27 @@ if not os.path.isfile("explicit_sentence_database.csv"):
         PATH_TO_CSV)
     # generate explicit sentence database
     gen_sentence_db.randomly_generate_n_sentence_quadruples(
-        data_dict, 15000)  # 40000
+        data_dict,
+        20000
+    )
     print("[Log] - Initialization finished")
 
+EMBEDDING_SIZE = 300
+K = 6
+SE_USED = 'AVG' # 'AVG' or 'DCT'
+
 train(
-    extend_embedd_sentences(
-        "explicit_sentence_database.csv",
+    dataset = extend_embedd_sentences(
+        dataset_path="explicit_sentence_database.csv",
+        word_embedding_used='fasttext',  # 'fasttext' or 'glove'
+        sentence_embedding_method=SE_USED,
         embedding_size=EMBEDDING_SIZE,
-        word_vectors_path=FT_SMALL,
-        k=K,
-        type="DCT"
+        k=K
     ),
     epochs=10,
-    batch_size=64,
+    batch_size=16,
     folds=10,
-    embedding_size=EMBEDDING_SIZE*K
+    embedding_size=EMBEDDING_SIZE,
+    sentence_embedding_method=SE_USED,
+    k=K
 )

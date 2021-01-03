@@ -46,7 +46,7 @@ def cbad_invalid_extended(row):
     return abcd_valid_extended([c, b, a, d])
 
 
-def extend_embedd_sentences(path, embedding_size, word_vectors_path, k, type='AVG'):
+def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, sentence_embedding_method, k):
     """This funtion should be called in main to start the business
 
     Args:
@@ -55,27 +55,33 @@ def extend_embedd_sentences(path, embedding_size, word_vectors_path, k, type='AV
     Returns:
         tuple: X, y values containing the sentences and their corresponding y value (0 or 1)
     """
-    print(f"[Log] - Extending and Embedding the {path}")
+    print(f"[Log] - Extending and Embedding the {dataset_path}")
     X = []
     y = []
-    if type == 'AVG':
-        embeddings_dict = glove_dict(embedding_size, word_vectors_path)#"../data/glove.6B/")
-    elif type == 'DCT':
-        embeddings_dict = load_vectors_fasttext(word_vectors_path)
+    
+    if word_embedding_used == 'glove':
+        embeddings_dict = glove_dict(embedding_size)
+    elif word_embedding_used == 'fasttext':
+        embeddings_dict = load_vectors_fasttext()
     else:
-        raise ValueError("Type should be 'AVG' or 'DCT' in extend_embedd_sentences()")
-    # if it works, do not write to file
-    with open(path, 'r') as f:
+        raise ValueError("word_embedding_used should be 'glove' or 'fasttext' in extend_embedd_sentences()")
+    
+    skipped_quadruples = 0
+    with open(dataset_path, 'r') as f:
         csv_file = csv.reader(f, delimiter='|')
         for row in csv_file:
             # Embedd a, b, c ,d
             try:
-                # ZEAZEAE
-                if type == 'AVG':
-                    embedded_row = embedd_row(row, embeddings_dict, embedding_size=embedding_size, type='AVG')
-                elif type == 'DCT':
-                    embedded_row = embedd_row(row, embeddings_dict, k=k, type='DCT')
+                embedded_row = embedd_row(
+                    row,
+                    word_embedding_used=word_embedding_used,
+                    sentence_embedding_method=sentence_embedding_method,
+                    embeddings_dict=embeddings_dict,
+                    embedding_size=embedding_size,
+                    k=k
+                )
             except EmbeddingError as e:
+                skipped_quadruples += 1
                 # print(f"[Error] - {e}")
                 pass
             else:
@@ -96,4 +102,5 @@ def extend_embedd_sentences(path, embedding_size, word_vectors_path, k, type='AV
                 X.extend(cbad)
                 y.extend([[0]] * 8)
                 y.extend([[0]] * 8)
+    print(f"[Log] - Skipped {skipped_quadruples} quadruples")
     return np.array(X), np.array(y)

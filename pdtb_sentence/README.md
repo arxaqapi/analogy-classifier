@@ -19,12 +19,18 @@
 * main_pdtb_sentence_classification.py uses explicit_sentence_database.csv as training set.
 
 ## Usage
-* Choose the embedding size and the path where the dataset used in the cnn will be stored
-```
+* Choose the path where the dataset used in the cnn will be stored
+```python
 EMBEDDING_SIZE = 50
 PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
 ```
-* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 118```
+* Choose the embedding size, the k value if Discrete Cosine Transform is used and the sentence embedding method used
+```python
+EMBEDDING_SIZE = 300
+K = 6
+SE_USED = 'AVG' # 'AVG' or 'DCT'
+```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 161```
 * Start the main_pdtb_sentence_classification.py script with the following command line:
 ```
 $ python3 main_pdtb_sentence_classification.py

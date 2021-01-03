@@ -25,6 +25,7 @@ def randomly_generate_n_sentence_quadruples(data_dict, n_sentences=20000):
     For the moment we only work with 'Explicit' R relation
     Randomly select 2 sentences sharing the same relation and making it into a quadruple
     """
+    print("[Log] - Randomly generating the sentence quadruples...")
     sent_pair_list = data_dict['Explicit']
     with open("explicit_sentence_database.csv", 'w') as f:
         csv_file = csv.writer(f, delimiter='|')
