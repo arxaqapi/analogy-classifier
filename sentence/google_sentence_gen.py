@@ -1,8 +1,14 @@
+import re
 import csv
 import numpy as np
+import pandas as pd
 
-from sentence_embedding import glove_dict
+import sentence_templates as st
+from sentence_embedding import glove_dict, embedd_row, EmbeddingError
 from sentence_extend import abcd_valid_extended, bacd_invalid_extended, cbad_invalid_extended
+
+
+SENT_FILE = "generated_sentences.csv"
 
 
 def split_google_dataset(path, to):
@@ -17,7 +23,7 @@ def split_google_dataset(path, to):
     """
     dataset = {}
     current_section_name = ''
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         csv_reader = csv.reader(f, delimiter=' ')
         for row in csv_reader:
             if row[0] == ':':
@@ -39,114 +45,204 @@ def replace_with(sentence, car, word):
     return sentence.replace(car, word)
 
 
-# Common capital cities template sentences
-ccc_sentences = (
-    ("They traveled to $", "They took a trip to $"),
-    ("She arrived yesterday in $", "She just landed in $"),
-    ("We just came back from $", "We arrived yesterday from $"),
-    ("I took my vacations in $", "I flew to $ for these summer vacation"),
-    (
-        "My internship supervisor is born in $",
-        "My internship supervisor comes from $"
-    )
-)
+def fix_a_an(sent):
+    obj = "[a,an]"
+    splitted = sent.split(' ')
+    try:
+        index = splitted.index(obj)
+    except:
+        return sent
+    else:
+        if splitted[index + 1][0].lower() in ['a', 'e', 'i', 'o', 'u']:
+            splitted[index] = "an"
+        else:
+            splitted[index] = "a"
+    return ' '.join(splitted)
 
 
-def gen_ccc_sentences(path, sentences, output_file="temp/ccc_sentences.csv", write_mode='w'):
-    """Generate len(sentences)*4*nb_rows new sentences based on the sentences template
+def fix_is_are(sent):
+    obj = "[is,are]"
+    splitted = sent.split(' ')
+    try:
+        index = splitted.index(obj)
+    except:
+        return sent
+    else:
+        if splitted[index - 1][len(splitted[index - 1]) - 1].lower() in ['s']:
+            splitted[index] = "are"
+        else:
+            splitted[index] = "is"
+    return ' '.join(splitted)
 
-    Args:
-        path (string): path to the input word file
-        sentences (list): the templates sentences
 
-    Returns:
-        list: the newly generated sentences
-    ```
-    - s1a : s2b :: s1c : s2d
-    - s2a : s1b :: s2c : s1d
-    - s1a : s1b :: s1c : s1d
-    - s2a : s2b :: s2c : s2d
-    ```
-    """
+def ccc_gen():  # capital-common-cities sentences gen
     generated_sentences = []
-    with open(path, 'r') as f:
-        csv_file = csv.reader(f, delimiter=' ')
-        for row in csv_file:
+    with open("google_split/capital-common-countries.txt", mode='r', encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=' ')
+        for row in csv_reader:
             # s1a : s2b :: s1c : s2d
-            # s2a : s1b :: s2c : s1d
-            for start_index in range(2):
-                for sentence_tuple in sentences:
-                    sentence_row = []
-                    i = start_index
-                    for word in row:
-                        sentence_row.append(replace_with(
-                            sentence_tuple[i % 2], '$', word.strip())
-                        )
-                        i += 1
-                    generated_sentences.append(sentence_row)
-            # s1a : s1b :: s1c : s1d
-            # s2a : s2b :: s2c : s2d
-            for sentence_tuple in sentences:
-                for sent in sentence_tuple:
-                    sentence_row = []
-                    for word in row:
-                        sentence_row.append(
-                            replace_with(sent, '$', word.strip())
-                        )
-                    generated_sentences.append(sentence_row)
-    # Write to file
-    with open(output_file, write_mode) as f:
-        csv_writer = csv.writer(f, delimiter=";")
-        for row in generated_sentences:
-            csv_writer.writerow(row)
-
-    return generated_sentences
-
-
-# gram6-nationality-adjective template sentences
-gna_sentences = (
-    ("My friend comes from $", "I have a $ friend"),
-    ("The culture in $ is very rich", "The $ culture is very rich"),
-)
-
-
-def gen_gna_sentences(path, sentences, output_file="gna_sentences.csv", write_mode='w'):
-    """Generate len(sentences)*1*nb_rows new sentences based on the sentences template
-
-    Args:
-        path (string): path to the input word file
-        sentences (list): the templates sentences
-
-    Returns:
-        list: the newly generated sentences
-    ```
-    - s1a : s2b :: s1c : s2d
-    ```
-    """
-    generated_sentences = []
-    with open(path, 'r') as f:
-        csv_file = csv.reader(f, delimiter=' ')
-        for row in csv_file:
-            # s1a : s2b :: s1c : s2d
-            for sentence_tuple in sentences:
+            i = 0
+            for sentence_tuple in st.ccc_sentences:
                 sentence_row = []
-                i = 0
                 for word in row:
                     sentence_row.append(
                         replace_with(
                             sentence_tuple[i % 2],
                             '$',
                             word.strip()
-                        ))
+                        )
+                    )
                     i += 1
                 generated_sentences.append(sentence_row)
-    # Write to file
-    with open(output_file, write_mode) as f:
-        csv_writer = csv.writer(f, delimiter=";")
-        for row in generated_sentences:
-            csv_writer.writerow(row)
-
     return generated_sentences
+
+
+def cis_gen():  # city-in-state sentence gen
+    generated_sentences = []
+    with open("google_split/city-in-state.txt", mode='r', encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=' ')
+        for row in csv_reader:
+            for sentence in st.cis_sentences:
+                sentence_row = []
+                for word in row:
+                    sentence_row.append(
+                        replace_with(
+                            sentence,
+                            '$',
+                            word.strip()
+                        )
+                    )
+                generated_sentences.append(sentence_row)
+    return generated_sentences
+
+
+def cur_gen():  # currency sent gen
+    generated_sentences = []
+    with open("google_split/currency.txt", mode='r', encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=' ')
+        for row in csv_reader:
+            # s1a : s2b :: s1c : s2d
+            i = 0
+            for sentence_tuple in st.cur_sentences:
+                sentence_row = []
+                for word in row:
+                    sentence_row.append(
+                        replace_with(
+                            sentence_tuple[i % 2],
+                            '$',
+                            word.strip()
+                        )
+                    )
+                    i += 1
+                generated_sentences.append(sentence_row)
+    return generated_sentences
+
+
+def fam_gen():  # family sent gen
+    generated_sentences = []
+    exclusion_list = ["his", "he", "prince", "policeman"]
+    with open("google_split/family.txt", mode='r', encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=' ')
+        for row in csv_reader:
+            if row[0] in exclusion_list or row[2] in exclusion_list:
+                continue
+            for sentence in st.fam_sentences:
+                sentence_row = []
+                for word in row:
+                    sentence_row.append(
+                        fix_is_are(
+                            replace_with(
+                                sentence,
+                                '$',
+                                word.strip()
+                            )
+                        )
+                    )
+                generated_sentences.append(sentence_row)
+    return generated_sentences
+
+
+def gna_gen():  # nationality adj sent gen
+    generated_sentences = []
+    with open("google_split/gram6-nationality-adjective.txt", mode='r', encoding="utf-8") as f:
+        csv_reader = csv.reader(f, delimiter=' ')
+        for row in csv_reader:
+            # s1a : s2b :: s1c : s2d
+            i = 0
+            for sentence_tuple in st.gna_sentences:
+                sentence_row = []
+                for word in row:
+                    sentence_row.append(
+                        fix_a_an(
+                            replace_with(
+                                sentence_tuple[i % 2].replace(u'\xa0', ' '),
+                                '$',
+                                word.strip()
+                            )
+                        )
+                    )
+                    i += 1
+                generated_sentences.append(sentence_row)
+    return generated_sentences
+
+
+def opp_dict(path="google_split/gram2-opposite.txt"):
+    # 28 valeur dans dict for "google_split/gram2-opposite.txt"
+    data_dict = {}
+    df = pd.read_csv(path, delimiter=' ', header=None)
+    step = 28
+    for i in range(int(812 / step)):
+        data_dict[df[0][i * step]] = df[1][i * step]
+    return data_dict
+
+
+def get_opposite_pair(sentence, data_dict):
+    sentence_norm = sentence.split(' ')
+    sentence_opp = sentence.split(' ')
+    pattern = re.compile(r'^\[.+\]$')
+    for w in sentence_norm:
+        if pattern.search(w):
+            # Found the word to replace with opposite
+            index = sentence_norm.index(w)
+            sentence_norm[index] = w.strip('[]')
+            sentence_opp[index] = data_dict[w.strip('[]')]
+            if sentence_norm[index - 1] in ["a", "an"]:
+                sentence_norm[index - 1] = "[a,an]"
+            if sentence_opp[index - 1] in ["a", "an"]:
+                sentence_opp[index - 1] = "[a,an]"
+    return list(map(fix_a_an, [' '.join(sentence_norm), ' '.join(sentence_opp)]))
+
+
+def opp_gen():  # opposite sent gen
+    data_dict = opp_dict()
+    generated_sentences = []
+    for first_sent in st.opp_sentences:
+        for snd_sent in st.opp_sentences:
+            if first_sent != snd_sent:
+                sentence_row = []
+                sentence_row.extend(
+                    get_opposite_pair(first_sent, data_dict)
+                )
+                sentence_row.extend(
+                    get_opposite_pair(snd_sent, data_dict)
+                )
+                generated_sentences.append(sentence_row)
+    return generated_sentences
+
+
+def output_sentence_file():
+    dataset = []
+    dataset.extend(ccc_gen())
+    dataset.extend(cis_gen())
+    dataset.extend(cur_gen())
+    dataset.extend(fam_gen())
+    dataset.extend(gna_gen())
+    dataset.extend(opp_gen())
+    with open(SENT_FILE, 'w', encoding='utf-8') as f:
+        csv_writer = csv.writer(f, delimiter='|')
+        csv_writer.writerows(dataset)
+    return dataset
+
 
 
 def extend_embedd_generated_sentences(path, embedding_size=100):
@@ -159,53 +255,47 @@ def extend_embedd_generated_sentences(path, embedding_size=100):
         tuple: X,y arrays containing the embedded dataset
     """
     # Split the dataset into temp/ directory
-    split_google_dataset("../data/google/questions-words.txt", "temp/")
-    
+    split_google_dataset("../data/google/questions-words.txt", "google_split/")
+
     # Generate the new sentences forming the dataset
-    gen_ccc_sentences(
-        "temp/capital-common-countries.txt",
-        ccc_sentences,
-        output_file='sentences.csv',
-        write_mode='w'
-    )
-    gen_gna_sentences(
-        "temp/gram6-nationality-adjective.txt",
-        gna_sentences,
-        output_file='sentences.csv',
-        write_mode='a'
-    )
+    output_sentence_file()
 
     # extend then embedd the dataset
     embedding_dict = glove_dict(embedding_size, "../data/glove.6B/")
     # Create X, Y placeholders
     X = []
     y = []
-    with open(path, 'r') as f:
-        csv_reader = csv.reader(f, delimiter=';')
+    skipped_quadruples = 0
+    with open(path, 'r', encoding='utf-8') as f:
+        csv_reader = csv.reader(f, delimiter='|')
         for row in csv_reader:
-            # extend valid
-            abcd = abcd_valid_extended(
-                row,
-                embedding_dict=embedding_dict,
-                embedding_size=embedding_size
-            )
-            X.extend(abcd)
-            y.extend([[1]] * 8)
-            # extend invalid
-            bacd = bacd_invalid_extended(
-                row,
-                embedding_dict=embedding_dict,
-                embedding_size=embedding_size
-            )
-            cbad = cbad_invalid_extended(
-                row,
-                embedding_dict=embedding_dict,
-                embedding_size=embedding_size
-            )
-            X.extend(bacd)
-            X.extend(cbad)
-            y.extend([[0]] * 8)
-            y.extend([[0]] * 8)
-
-    # return X y
+            # Embedd a, b, c ,d
+            try:
+                embedded_row = embedd_row(
+                    row,
+                    embeddings_dict=embedding_dict,
+                    embedding_size=embedding_size
+                )
+            except EmbeddingError as e:
+                skipped_quadruples += 1
+                # print(f"[Error] - {e}")
+                pass
+            else:
+                # not executed if error
+                abcd = abcd_valid_extended(
+                    embedded_row
+                )
+                X.extend(abcd)
+                y.extend([[1]] * 8)
+                # extend invalid
+                bacd = bacd_invalid_extended(
+                    embedded_row
+                )
+                cbad = cbad_invalid_extended(
+                    embedded_row
+                )
+                X.extend(bacd)
+                X.extend(cbad)
+                y.extend([[0]] * 8)
+                y.extend([[0]] * 8)
     return np.array(X), np.array(y)

@@ -1,2 +1,2 @@
-rm sentences.csv
-rm -fr temp/*.txt __pycache__
+rm *.csv
+rm -fr google_split/*.txt __pycache__

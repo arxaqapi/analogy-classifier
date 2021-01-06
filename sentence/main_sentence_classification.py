@@ -103,7 +103,7 @@ EMBEDDING_SIZE = 100
 
 train(
     extend_embedd_generated_sentences(
-        "sentences.csv",
+        "generated_sentences.csv",
         embedding_size=EMBEDDING_SIZE
     ),
     epochs=10,
