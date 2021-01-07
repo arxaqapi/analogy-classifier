@@ -1,5 +1,12 @@
 # Sentence classification task
 
+## Usage
+The following example generates the ```generated_sentences.csv``` file containing the sentence dataset based on the templates found in ```sentence_template.py```
+```python
+from google_sentence_gen import output_sentence_file
+dataset = output_sentence()
+```
+
 ### Sentence templates format
 The sentences are in the form of a tuple containing one or two sentences (this number depends of the relationship category)
 
