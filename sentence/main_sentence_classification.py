@@ -1,9 +1,12 @@
-from google_sentence_gen import extend_embedd_generated_sentences
+from google_sentence_gen import extend_embedd_subset, output_sentence_file
+from sentence_embedding import glove_dict
 
+import os
 import random
 from datetime import datetime
 
 import numpy as np
+import pandas as pd
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Flatten, Dense, Activation
 from sklearn.model_selection import KFold
@@ -46,41 +49,34 @@ def save(model, name):
         '.keras')
 
 
-def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
-    embedded_dataset, Y = dataset
-
-    # embedd the dataset
+def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
     print(
-        f"[Log] - Parameters : epochs = {epochs} | folds = {folds} | Word vector size = {embedding_size}")
-    random.seed()
+        f"[Log] - Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}")
 
     # KFold init
+    random.seed()
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
 
-    # Prepare data for convolutional layer
-    print(f"Shape = {embedded_dataset.shape}")
-    embedded_dataset = np.reshape(
-        embedded_dataset,
-        (embedded_dataset.shape[0], embedding_size, 4, 1)
-    )
-
-    # Parameters
-    input_shape = embedded_dataset[0].shape
+    dataset = pd.read_csv(dataset_path, header=None, delimiter='|').to_numpy()
+    input_shape = (embedding_size, 4, 1)
     fold = 1
     verbosity = 1
+    embedding_dict = glove_dict(embedding_size, "../data/glove.6B/")
+    # TODO
+    # pre-process file / array
+    print("[Log] ---- START ----")
+    for train_index, test_index in kf.split(dataset):
 
-    print("---- START ----")
-    for train_index, test_index in kf.split(embedded_dataset):
+        train_file = "temp/train_" + str(fold) + ".csv"
+        pd.DataFrame(dataset[train_index]).to_csv(train_file, sep='|', index=False, header=None)
+        X_train, y_train = extend_embedd_subset(train_file, embedding_dict, embedding_size)
 
-        X_train = embedded_dataset[train_index]
-        y_train = Y[train_index]
-
-        X_test = embedded_dataset[test_index]
-        y_test = Y[test_index]
+        test_file = "temp/test_" + str(fold) + ".csv"
+        pd.DataFrame(dataset[test_index]).to_csv(test_file, sep='|', index=False, header=None)
+        X_test, y_test = extend_embedd_subset(test_file, embedding_dict, embedding_size)
 
         cnn = cnn_model(input_shape)
 
-        # history =
         cnn.fit(
             X_train,
             y_train,
@@ -89,7 +85,6 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
             verbose=verbosity
         )
         # Metrics
-        # scores =
         cnn.evaluate(
             X_test,
             y_test,
@@ -98,14 +93,13 @@ def train(dataset, epochs=10, batch_size=32, folds=10, embedding_size=50):
         save(cnn, f"fold_{fold}")
         fold += 1
 
+if not os.path.isfile("generated_sentences.csv"):
+    output_sentence_file()
 
 EMBEDDING_SIZE = 100
 
 train(
-    extend_embedd_generated_sentences(
-        "generated_sentences.csv",
-        embedding_size=EMBEDDING_SIZE
-    ),
+    "generated_sentences.csv",
     epochs=10,
     batch_size=128,
     folds=10,

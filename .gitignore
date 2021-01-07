@@ -1,12 +1,12 @@
-#### workflow
+# workflow
 cnn_model/
 data/
 test/
-todo.txt
+
+*.csv
 
 # PDTB v2
 *.pipe
-*/pdtb_split/*
 
 #### Python
 # Byte-compiled / optimized / DLL files

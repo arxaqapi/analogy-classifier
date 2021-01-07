@@ -1,5 +1,6 @@
 import re
 import csv
+import sys
 import numpy as np
 import pandas as pd
 
@@ -231,6 +232,7 @@ def opp_gen():  # opposite sent gen
 
 
 def output_sentence_file():
+    split_google_dataset("../data/google/questions-words.txt", "google_split/")
     dataset = []
     dataset.extend(ccc_gen())
     dataset.extend(cis_gen())
@@ -244,32 +246,13 @@ def output_sentence_file():
     return dataset
 
 
-
-def extend_embedd_generated_sentences(path, embedding_size=100):
-    """Extend and embedds the sentence dataset !!
-
-    Args:
-        path (string): path to the sentences.csv file containing the sentences
-
-    Returns:
-        tuple: X,y arrays containing the embedded dataset
-    """
-    # Split the dataset into temp/ directory
-    split_google_dataset("../data/google/questions-words.txt", "google_split/")
-
-    # Generate the new sentences forming the dataset
-    output_sentence_file()
-
-    # extend then embedd the dataset
-    embedding_dict = glove_dict(embedding_size, "../data/glove.6B/")
-    # Create X, Y placeholders
+def extend_embedd_subset(dataset, embedding_dict, embedding_size):
     X = []
     y = []
     skipped_quadruples = 0
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(dataset, 'r', encoding='utf-8') as f:
         csv_reader = csv.reader(f, delimiter='|')
         for row in csv_reader:
-            # Embedd a, b, c ,d
             try:
                 embedded_row = embedd_row(
                     row,
@@ -278,8 +261,7 @@ def extend_embedd_generated_sentences(path, embedding_size=100):
                 )
             except EmbeddingError as e:
                 skipped_quadruples += 1
-                # print(f"[Error] - {e}")
-                pass
+                print(f"[Error] - {e}", file=sys.stderr)
             else:
                 # not executed if error
                 abcd = abcd_valid_extended(
@@ -287,7 +269,6 @@ def extend_embedd_generated_sentences(path, embedding_size=100):
                 )
                 X.extend(abcd)
                 y.extend([[1]] * 8)
-                # extend invalid
                 bacd = bacd_invalid_extended(
                     embedded_row
                 )
@@ -298,4 +279,6 @@ def extend_embedd_generated_sentences(path, embedding_size=100):
                 X.extend(cbad)
                 y.extend([[0]] * 8)
                 y.extend([[0]] * 8)
-    return np.array(X), np.array(y)
+    X = np.array(X)
+    X = np.reshape(X, (X.shape[0], embedding_size, 4, 1))
+    return X, np.array(y)

@@ -1,2 +1,3 @@
 rm *.csv
-rm -fr google_split/*.txt __pycache__
+rm -rf google_split/*.txt __pycache__
+rm -rf temp/*.csv

@@ -15,6 +15,7 @@ def glove_dict(embedding_size, path="data/glove.6B/"):
     Returns:
         dict: the dictionnar containing all word vectors of size embedding_size
     """
+    print("[Log] - Loading the embedding vectors...")
     embeddings_dict = {}
     # "data/glove.6B/glove.6B."
     with open(path + "glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
@@ -23,6 +24,7 @@ def glove_dict(embedding_size, path="data/glove.6B/"):
             word = values[0]
             vec = np.asarray(values[1:], "float32")
             embeddings_dict[word] = vec
+    print("[Log] - Loading finished")
     return embeddings_dict
 
 

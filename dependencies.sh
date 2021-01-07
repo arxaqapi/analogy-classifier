@@ -16,4 +16,5 @@ unzip data/glove.6B/glove.6B.zip -d data/glove.6B/
 unzip data/fasttext/crawl-300d-2M.vec.zip -d data/fasttext/
 
 mkdir -p sentence/google_split/
+mkdir -p sentence/temp/
 mkdir -p pdtb_sentence/pdtb_split/
