@@ -4,6 +4,7 @@ data/
 test/
 
 *.csv
+*.txt
 
 # PDTB v2
 *.pipe

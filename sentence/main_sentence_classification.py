@@ -10,7 +10,7 @@ import pandas as pd
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Flatten, Dense, Activation
 from sklearn.model_selection import KFold
-
+from sklearn.metrics import confusion_matrix, classification_report, precision_score, recall_score, f1_score
 
 def cnn_model(shape=(50, 4, 1)):
     model = Sequential([
@@ -49,10 +49,15 @@ def save(model, name):
         '.keras')
 
 
-def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
-    print(
-        f"[Log] - Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}")
+def rnd(n):
+    np.around(n, 2)
 
+
+def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
+    report_name = f"report_e{epochs}_f{folds}_wv{embedding_size}.txt"
+    with open(report_name, 'w') as f:
+        f.write("--- Training starts ---\n")
+        f.write(f"- Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}\n")
     # KFold init
     random.seed()
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
@@ -64,6 +69,12 @@ def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
     embedding_dict = glove_dict(embedding_size, "../data/glove.6B/")
     # TODO
     # pre-process file / array
+    confusion_matrices = []
+    precision_scores = []
+    recall_scores = []
+    f1_scores = []
+    acc_per_fold = []
+    target_names = ['invalid analogy', 'valid analogy']
     print("[Log] ---- START ----")
     for train_index, test_index in kf.split(dataset):
 
@@ -84,14 +95,38 @@ def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
             epochs=epochs,
             verbose=verbosity
         )
-        # Metrics
-        cnn.evaluate(
+
+        scores = cnn.evaluate(
             X_test,
             y_test,
             verbose=verbosity
         )
-        save(cnn, f"fold_{fold}")
+        # Metrics
+        y_predicted = np.around(cnn.predict(X_test), 0)
+        t_neg, f_pos, f_neg, t_pos = confusion_matrix(
+            y_test, y_predicted
+        ).ravel()
+        confusion_matrices.append([t_neg, f_pos, f_neg, t_pos])
+        report = classification_report(y_test, y_predicted, target_names=target_names)
+
+        precision_scores.append(precision_score(y_test, y_predicted))
+        recall_scores.append(recall_score(y_test, y_predicted))
+        f1_scores.append(f1_score(y_test, y_predicted))
+        acc_per_fold.append(scores[1] * 100)
+        with open(report_name, 'a') as f:
+            f.write("-"*75)
+            f.write(f"\n  - Fold n°{fold}:\n")
+            f.write(f"t_neg = {t_neg} | f_pos = {f_pos} | f_neg = {f_neg} | t_pos = {t_pos}\n")
+            f.writelines(report)
+        save(cnn, f"fold_{fold}\n")
         fold += 1
+    with open(report_name, 'a', encoding='utf-8') as f:
+        f.write(f"\n--- Total results after {folds} folds for vector size = {embedding_size} ---\n")
+        f.write(f"Cross folds average accuracy for {epochs} epochs : {rnd(np.mean(acc_per_fold))} and standart deviation = {rnd(np.std(acc_per_fold))}\n")
+        f.write(f"Average precision : {rnd(np.mean(precision_scores))} and standart deviation = {rnd(np.std(precision_scores))}\n")
+        f.write(f"Average recall : {rnd(np.mean(recall_scores))} and standart deviation = {rnd(np.std(recall_scores))}\n")
+        f.write(f"Average f1 : {rnd(np.mean(f1_scores))} and standart deviation = {rnd(np.std(f1_scores))}\n")
+        f.write("--- End ---")
 
 if not os.path.isfile("generated_sentences.csv"):
     output_sentence_file()

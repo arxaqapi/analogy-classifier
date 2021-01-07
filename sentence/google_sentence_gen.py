@@ -259,9 +259,8 @@ def extend_embedd_subset(dataset, embedding_dict, embedding_size):
                     embeddings_dict=embedding_dict,
                     embedding_size=embedding_size
                 )
-            except EmbeddingError as e:
+            except EmbeddingError:
                 skipped_quadruples += 1
-                print(f"[Error] - {e}", file=sys.stderr)
             else:
                 # not executed if error
                 abcd = abcd_valid_extended(
