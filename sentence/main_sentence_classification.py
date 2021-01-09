@@ -50,7 +50,7 @@ def save(model, name):
 
 
 def rnd(n):
-    np.around(n, 2)
+    return np.around(n, 3)
 
 
 def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
