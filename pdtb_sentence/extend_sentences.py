@@ -19,14 +19,14 @@ def abcd_valid_extended(row):
     c = row[2]
     d = row[3]
     return [
-        np.stack([a, b, c, d]).T,
-        np.stack([a, c, b, d]).T,
-        np.stack([c, d, a, b]).T,
-        np.stack([c, a, d, b]).T,
-        np.stack([d, b, c, a]).T,
-        np.stack([d, c, b, a]).T,
-        np.stack([b, a, d, c]).T,
-        np.stack([b, d, a, c]).T
+        np.stack([a, b, c, d]).T, #
+        np.stack([b, a, d, c]).T, #
+        np.stack([c, d, a, b]).T, #
+        np.stack([d, c, b, a]).T, #
+        # np.stack([a, c, b, d]).T,
+        # np.stack([d, b, c, a]).T,
+        # np.stack([c, a, d, b]).T,
+        # np.stack([b, d, a, c]).T
     ]
 
 
@@ -90,7 +90,7 @@ def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, s
                     embedded_row
                 )
                 X.extend(abcd)
-                y.extend([[1]] * 8)
+                y.extend([[1]] * 4) # 8 - 4
                 # extend invalid
                 bacd = bacd_invalid_extended(
                     embedded_row
@@ -100,7 +100,7 @@ def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, s
                 )
                 X.extend(bacd)
                 X.extend(cbad)
-                y.extend([[0]] * 8)
-                y.extend([[0]] * 8)
+                y.extend([[0]] * 4) # 8 - 4
+                y.extend([[0]] * 4) # 8 - 4
     print(f"[Log] - Skipped {skipped_quadruples} quadruples")
     return np.array(X), np.array(y)
