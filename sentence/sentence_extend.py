@@ -14,21 +14,21 @@ def abcd_valid_extended(row):
         embedding_size (int, optional): Size of the embedded word vector. Defaults to 100.
 
     Returns:
-        list: a list containing the 8 valid analogies sentence lists
+        list: a list containing the 8 or 4 valid analogies sentence lists
     """
     a = row[0]
     b = row[1]
     c = row[2]
     d = row[3]
     return [
-        np.stack([a, b, c, d]).T,
-        np.stack([a, c, b, d]).T,
-        np.stack([c, d, a, b]).T,
-        np.stack([c, a, d, b]).T,
-        np.stack([d, b, c, a]).T,
-        np.stack([d, c, b, a]).T,
-        np.stack([b, a, d, c]).T,
-        np.stack([b, d, a, c]).T
+        np.stack([a, b, c, d]).T, #
+        np.stack([b, a, d, c]).T, #
+        np.stack([c, d, a, b]).T, #
+        np.stack([d, c, b, a]).T, #
+        # np.stack([a, c, b, d]).T,
+        # np.stack([d, b, c, a]).T,
+        # np.stack([c, a, d, b]).T,
+        # np.stack([b, d, a, c]).T
     ]
 
 

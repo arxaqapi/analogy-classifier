@@ -267,7 +267,7 @@ def extend_embedd_subset(dataset, embedding_dict, embedding_size):
                     embedded_row
                 )
                 X.extend(abcd)
-                y.extend([[1]] * 8)
+                y.extend([[1]] * 4) # 8 - 4
                 bacd = bacd_invalid_extended(
                     embedded_row
                 )
@@ -276,8 +276,8 @@ def extend_embedd_subset(dataset, embedding_dict, embedding_size):
                 )
                 X.extend(bacd)
                 X.extend(cbad)
-                y.extend([[0]] * 8)
-                y.extend([[0]] * 8)
+                y.extend([[0]] * 4) # 8 - 4
+                y.extend([[0]] * 4) # 8 - 4
     X = np.array(X)
     X = np.reshape(X, (X.shape[0], embedding_size, 4, 1))
     return X, np.array(y)

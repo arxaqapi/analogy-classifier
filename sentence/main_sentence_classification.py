@@ -67,8 +67,7 @@ def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
     fold = 1
     verbosity = 1
     embedding_dict = glove_dict(embedding_size, "../data/glove.6B/")
-    # TODO
-    # pre-process file / array
+    # metrics
     confusion_matrices = []
     precision_scores = []
     recall_scores = []
