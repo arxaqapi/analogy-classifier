@@ -8,7 +8,7 @@ ccc_sentences = (
         "My internship supervisor is born in $",
         "My internship supervisor comes from $"
     ),
-    ("Tomorrow i'll be going to $", "I have to travel to $ tomorrow"),
+    ("Tomorrow I'll be going to $", "I have to travel to $ tomorrow"),
     (
         "These pretended journeys to $ were rather cumbrous.",
         "These so-called trips to $ were rather painful."
@@ -19,11 +19,11 @@ ccc_sentences = (
 cis_sentences = (
     ("They go down to $"),
     ("His sister went to $"),
-    ("The president of the United States is born in $"),
+    ("The president of the United States was born in $"),
     ("Citizens in $ are more likely to vote"),
     ("Citizens in $, upset over changes to a bridge, negotiated a deal in their favour"),
     ("$ labor economists think a shortage is probable"),
-    ("its bank in $ also reported an increased loss for the quarter"),
+    ("Its bank in $ also reported an increased loss for the quarter"),
     ("Several people are protesting in front of a controversial construction site in $")
 )
 
@@ -34,7 +34,7 @@ cur_sentences = (
         "Financial markets in $ are performing well, attracting investors",
         "Brokers are betting on the $"
     ),
-    ("What is the currency used in $?", "Wich country uses the $?"),
+    ("What is the currency used in $?", "Which country uses the $?"),
     (
         "In $, the local bank portfolio plunged to a very low value",
         "The bank lost multiple millions of $"
@@ -57,7 +57,7 @@ fam_sentences = (
     ("Let him take care of his $"),
     ("If you were not my $ there would be nothing I could reproach you with"),
     ("Her $ [is,are] very rich and stingy"),
-    ("The $ [is,are] coming. Can you hear them?")
+    ("The $ [is,are] coming. Can you hear them?")    
 )
 
 
@@ -74,7 +74,7 @@ gna_sentences = (
     ),
     ("Emma's new boyfriend comes from $ .", "Emma has [a,an] $ boyfriend"),
     (
-        "His parents come from $, even if he is born in Hong Kong.",
+        "His parents came from $, even if he was born in Hong Kong.",
         "Although he was born in Hong Kong, both of his parents are $."
     ),
     ("The people in $ are warm and friendly", "$ people are warm and friendly."),
@@ -87,7 +87,7 @@ gna_sentences = (
         "The $ government is passing controversial bills"
     ),
     (
-        "The health situation is only getting worse in france",
+        "The health situation is only getting worse in $",
         "The $ government is unable to cope with the rapid deterioration of the health situation"
     ),
     ("He speaks a refined langage only spoken in $", "He spoke in that refined $"),
