@@ -60,9 +60,9 @@ def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, s
     y = []
     
     if word_embedding_used == 'glove':
-        embeddings_dict = glove_dict(embedding_size)
+        embedding_dict = glove_dict(embedding_size)
     elif word_embedding_used == 'fasttext':
-        embeddings_dict = load_vectors_fasttext()
+        embedding_dict = load_vectors_fasttext()
     else:
         raise ValueError("word_embedding_used should be 'glove' or 'fasttext' in extend_embedd_sentences()")
     
@@ -76,7 +76,7 @@ def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, s
                     row,
                     word_embedding_used=word_embedding_used,
                     sentence_embedding_method=sentence_embedding_method,
-                    embeddings_dict=embeddings_dict,
+                    embedding_dict=embedding_dict,
                     embedding_size=embedding_size,
                     k=k
                 )
@@ -104,3 +104,43 @@ def extend_embedd_sentences(dataset_path, word_embedding_used, embedding_size, s
                 y.extend([[0]] * 4) # 8 - 4
     print(f"[Log] - Skipped {skipped_quadruples} quadruples")
     return np.array(X), np.array(y)
+
+
+def extend_embedd_subset(dataset, word_embedding_used, sentence_embedding_method, embedding_dict, embedding_size, k):
+    X = []
+    y = []
+    skipped_quadruples = 0
+    with open(dataset, 'r', encoding='utf-8') as f:
+        csv_reader = csv.reader(f, delimiter='|')
+        for row in csv_reader:
+            try:
+                embedded_row = embedd_row(
+                    row=row,
+                    word_embedding_used=word_embedding_used,
+                    sentence_embedding_method=sentence_embedding_method,
+                    embedding_dict=embedding_dict,
+                    embedding_size=embedding_size,
+                    k=k
+                )
+            except EmbeddingError:
+                skipped_quadruples += 1
+            else:
+                # not executed if error
+                abcd = abcd_valid_extended(
+                    embedded_row
+                )
+                X.extend(abcd)
+                y.extend([[1]] * 4) # 8 - 4
+                bacd = bacd_invalid_extended(
+                    embedded_row
+                )
+                cbad = cbad_invalid_extended(
+                    embedded_row
+                )
+                X.extend(bacd)
+                X.extend(cbad)
+                y.extend([[0]] * 4) # 8 - 4
+                y.extend([[0]] * 4) # 8 - 4
+    X = np.array(X)
+    X = np.reshape(X, (X.shape[0], embedding_size, 4, 1))
+    return X, np.array(y)

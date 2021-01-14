@@ -54,7 +54,7 @@ def rnd(n):
 
 
 def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
-    report_name = f"report_e{epochs}_f{folds}_wv{embedding_size}.txt"
+    report_name = f"reports/{embedding_size}/report_wv{embedding_size}_e{epochs}_batch{batch_size}_.txt"
     with open(report_name, 'w') as f:
         f.write("--- Training starts ---\n")
         f.write(f"- Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}\n")
@@ -130,11 +130,11 @@ def train(dataset_path, epochs=10, batch_size=32, folds=10, embedding_size=50):
 if not os.path.isfile("generated_sentences.csv"):
     output_sentence_file()
 
-EMBEDDING_SIZE = 100
+EMBEDDING_SIZE = 200
 
 train(
     "generated_sentences.csv",
-    epochs=10,
+    epochs=5,
     batch_size=128,
     folds=10,
     embedding_size=EMBEDDING_SIZE

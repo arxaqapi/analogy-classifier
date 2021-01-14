@@ -17,4 +17,8 @@ unzip data/fasttext/crawl-300d-2M.vec.zip -d data/fasttext/
 
 mkdir -p sentence/google_split/
 mkdir -p sentence/temp/
+mkdir -p pdtb_sentence/temp/
 mkdir -p pdtb_sentence/pdtb_split/
+mkdir -p pdtb_sentence/pdtb_semantic_split/
+mkdir -p pdtb_sentence/reports/50/ pdtb_sentence/reports/100/ pdtb_sentence/reports/200/ pdtb_sentence/reports/300/
+mkdir -p sentence/reports/50/ sentence/reports/100/ sentence/reports/200/ sentence/reports/300/

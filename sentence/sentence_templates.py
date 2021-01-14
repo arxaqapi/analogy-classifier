@@ -112,7 +112,7 @@ opp_sentences = (  # switch with opposite, get 2 sentences with relations r
     ("These parties were [acceptable] to all"),
     ("With such an husband her misery was considered [certain]"),
     ("He spoke of it as a [certain] event, of which the time alone could be undecided"),
-    ("He spoke of it as a [certain] event, of which the time alone could be [decided]"),
+    ("He spoke of it as a certain event, of which the time alone could be [decided]"),
     ("I ask only a [comfortable] home"),
     ("He also felt relatively [comfortable]")
 )

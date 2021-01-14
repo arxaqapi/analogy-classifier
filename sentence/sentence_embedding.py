@@ -16,16 +16,16 @@ def glove_dict(embedding_size, path="data/glove.6B/"):
         dict: the dictionnar containing all word vectors of size embedding_size
     """
     print("[Log] - Loading the embedding vectors...")
-    embeddings_dict = {}
+    embedding_dict = {}
     # "data/glove.6B/glove.6B."
     with open(path + "glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
         for line in f:
             values = line.split()
             word = values[0]
             vec = np.asarray(values[1:], "float32")
-            embeddings_dict[word] = vec
+            embedding_dict[word] = vec
     print("[Log] - Loading finished")
-    return embeddings_dict
+    return embedding_dict
 
 
 def pre_process_sentence(sentence, lower=False):
@@ -43,24 +43,24 @@ def pre_process_sentence(sentence, lower=False):
     return safe_sentence
 
 
-def avg_sent_to_vec(sentence, embeddings_dict, embedding_size):
+def avg_sent_to_vec(sentence, embedding_dict, embedding_size):
     safe_sentence = pre_process_sentence(sentence, lower=True)
 
     vector = np.zeros(embedding_size)
     n_words = len(safe_sentence)
     for word in safe_sentence:
         try:
-            vector += embeddings_dict[word]
+            vector += embedding_dict[word]
         except KeyError:
             raise EmbeddingError(
                 f"Could not embedd the word using 'AVG': {word}")
     return vector / n_words
 
 
-def embedd_row(row, embeddings_dict, embedding_size):
-    a = avg_sent_to_vec(row[0], embeddings_dict, embedding_size)
-    b = avg_sent_to_vec(row[1], embeddings_dict, embedding_size)
-    c = avg_sent_to_vec(row[2], embeddings_dict, embedding_size)
-    d = avg_sent_to_vec(row[3], embeddings_dict, embedding_size)
+def embedd_row(row, embedding_dict, embedding_size):
+    a = avg_sent_to_vec(row[0], embedding_dict, embedding_size)
+    b = avg_sent_to_vec(row[1], embedding_dict, embedding_size)
+    c = avg_sent_to_vec(row[2], embedding_dict, embedding_size)
+    d = avg_sent_to_vec(row[3], embedding_dict, embedding_size)
     assert a.shape == b.shape == c.shape == d.shape
     return [a, b, c, d]

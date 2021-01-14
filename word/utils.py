@@ -13,14 +13,14 @@ def glove_dict(embedding_size):
     Returns:
         dict: the dictionnar containing all word vectors of size embedding_size
     """
-    embeddings_dict = {}
+    embedding_dict = {}
     with open("../data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
         for line in f:
             values = line.split()
             word = values[0]
             vec = np.asarray(values[1:], "float32")
-            embeddings_dict[word] = vec
-    return embeddings_dict
+            embedding_dict[word] = vec
+    return embedding_dict
 
 
 def abcd_valid_extended(row, embedding_dict):
@@ -63,7 +63,7 @@ def extendGoogleDataset(path, embedding_size=50):
     - put the data in 2 variables, (X, y)
     path = path to the dataset
     """
-    embeddings_dict = glove_dict(embedding_size)
+    embedding_dict = glove_dict(embedding_size)
 
     X = []
     y = []
@@ -72,9 +72,9 @@ def extendGoogleDataset(path, embedding_size=50):
         csv_reader = csv.reader(csv_file, delimiter=' ')
         for row in csv_reader:
             if row[0] != ":":
-                abcd = abcd_valid_extended(row, embeddings_dict)
-                bacd = bacd_invalid_extended(row, embeddings_dict)
-                cbad = cbad_invalid_extended(row, embeddings_dict)
+                abcd = abcd_valid_extended(row, embedding_dict)
+                bacd = bacd_invalid_extended(row, embedding_dict)
+                cbad = cbad_invalid_extended(row, embedding_dict)
                 X.extend(abcd)
                 X.extend(bacd)
                 X.extend(cbad)

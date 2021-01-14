@@ -256,7 +256,7 @@ def extend_embedd_subset(dataset, embedding_dict, embedding_size):
             try:
                 embedded_row = embedd_row(
                     row,
-                    embeddings_dict=embedding_dict,
+                    embedding_dict=embedding_dict,
                     embedding_size=embedding_size
                 )
             except EmbeddingError:
