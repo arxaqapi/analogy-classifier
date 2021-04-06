@@ -1,8 +1,5 @@
-import csv
-import io
 import numpy as np
 from scipy.fftpack import dct
-
 
 class EmbeddingError(Exception):
     """Raised when the word cannot be embedded"""
@@ -18,15 +15,16 @@ def glove_dict(embedding_size):
     Returns:
         dict: the dictionnar containing all word vectors of size embedding_size
     """
-    print(f"[Log] - Loading Embedding vectors ...")
+    print("[Log] - Loading the embedding vectors...")
     embedding_dict = {}
+    # "data/glove.6B/glove.6B."
     with open("../data/glove.6B/glove.6B." + str(embedding_size) + "d.txt", 'r', encoding="utf-8") as f:
         for line in f:
             values = line.split()
             word = values[0]
             vec = np.asarray(values[1:], "float32")
             embedding_dict[word] = vec
-    print(f"[Log] - Loading Embedding vectors finished")
+    print("[Log] - Loading finished")
     return embedding_dict
 
 
@@ -101,14 +99,10 @@ def embedd_row(row, word_embedding_used, sentence_embedding_method, embedding_di
         c = avg_sent_to_vec(row[2], embedding_dict, embedding_size, lower=True)
         d = avg_sent_to_vec(row[3], embedding_dict, embedding_size, lower=True)
     elif sentence_embedding_method == 'AVG' and word_embedding_used == 'fasttext':
-        a = avg_sent_to_vec(row[0], embedding_dict,
-                            embedding_size, lower=False)
-        b = avg_sent_to_vec(row[1], embedding_dict,
-                            embedding_size, lower=False)
-        c = avg_sent_to_vec(row[2], embedding_dict,
-                            embedding_size, lower=False)
-        d = avg_sent_to_vec(row[3], embedding_dict,
-                            embedding_size, lower=False)
+        a = avg_sent_to_vec(row[0], embedding_dict, embedding_size, lower=False)
+        b = avg_sent_to_vec(row[1], embedding_dict, embedding_size, lower=False)
+        c = avg_sent_to_vec(row[2], embedding_dict, embedding_size, lower=False)
+        d = avg_sent_to_vec(row[3], embedding_dict, embedding_size, lower=False)
     elif sentence_embedding_method == 'DCT' and word_embedding_used == 'glove':
         a = dct_sentence_to_vec(row[0], embedding_dict, k=k, lower=True)
         b = dct_sentence_to_vec(row[1], embedding_dict, k=k, lower=True)
@@ -120,7 +114,6 @@ def embedd_row(row, word_embedding_used, sentence_embedding_method, embedding_di
         c = dct_sentence_to_vec(row[2], embedding_dict, k=k, lower=False)
         d = dct_sentence_to_vec(row[3], embedding_dict, k=k, lower=False)
     else:
-        raise ValueError(
-            "sentence_embedding_method should be 'DCT' or 'AVG' in extend_embedd_sentences()\n and word_embedding_used should be 'glove' or 'fasttext' in extend_embedd_sentences()")
+        raise ValueError("sentence_embedding_method should be 'DCT' or 'AVG' in extend_embedd_sentences()\n and word_embedding_used should be 'glove' or 'fasttext' in extend_embedd_sentences()")
     assert a.shape == b.shape == c.shape == d.shape
     return [a, b, c, d]

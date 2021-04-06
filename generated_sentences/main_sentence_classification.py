@@ -1,23 +1,18 @@
-import pdtb_preprocess
-import gen_sentence_db
-from extend_sentences import extend_embedd_subset
-from embedd_sentences import glove_dict, load_vectors_fasttext
-from utils import rnd, save
+from google_sentence_gen import output_sentence_file
+from sentence_extend import extend_embedd_subset
+from sentence_embedding import glove_dict, load_vectors_fasttext
+from utils import save, rnd
 
+import os
 import random
-import os.path
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
 from tensorflow.keras import Sequential
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Flatten, Dense, Activation
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix, classification_report, precision_score, recall_score, f1_score
-
-import tensorflow as tf
-
 
 def cnn_model(shape=(50, 4, 1)):
     model = Sequential([
@@ -47,12 +42,12 @@ def cnn_model(shape=(50, 4, 1)):
     return model
 
 
-def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epochs=10, batch_size=32, folds=10, embedding_size=50):
+def train(dataset_path, k, sentence_embedding_method, word_embedding_used, epochs=10, batch_size=32, folds=10, embedding_size=50):
     report_name = f"reports/{embedding_size}/report_{word_embedding_used}_{sentence_embedding_method}_wv{embedding_size}_e{epochs}_batch{batch_size}_.txt"
     with open(report_name, 'w') as f:
         f.write("--- Training starts ---\n")
         f.write(f"- Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}\n")
-    # =============================
+    # KFold init
     random.seed()
     kf = KFold(n_splits=folds, shuffle=True, random_state=5)
 
@@ -62,44 +57,44 @@ def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epoch
     elif word_embedding_used == 'fasttext':
         embedding_dict = load_vectors_fasttext()
     else:
-        raise ValueError("word_embedding_used should be 'glove' or 'fasttext' in extend_embedd_sentences()")
+        raise ValueError("word_embedding_used should be 'glove' or 'fasttext' in train()")
     if sentence_embedding_method == 'DCT':
         embedding_size = 300
         embedding_size *= k
-    # Parameters
+    
     input_shape = (embedding_size, 4, 1)
     fold = 1
     verbosity = 1
-    # Metrics
+    
+    # metrics
     confusion_matrices = []
     precision_scores = []
     recall_scores = []
     f1_scores = []
     acc_per_fold = []
-    target_names = ['invalid analogy', 'valid analogy']    
-
+    target_names = ['invalid analogy', 'valid analogy']
     print("[Log] ---- START ----")
     for train_index, test_index in kf.split(dataset):
 
         train_file = "temp/train_" + str(fold) + ".csv"
         pd.DataFrame(dataset[train_index]).to_csv(train_file, sep='|', index=False, header=None)
         X_train, y_train = extend_embedd_subset(
-            dataset=train_file,
-            word_embedding_used=word_embedding_used,
+            train_file,
+            embedding_dict,
+            embedding_size,
             sentence_embedding_method=sentence_embedding_method,
-            embedding_dict=embedding_dict,
-            embedding_size=embedding_size,
+            word_embedding_used=word_embedding_used,
             k=k
         )
 
         test_file = "temp/test_" + str(fold) + ".csv"
         pd.DataFrame(dataset[test_index]).to_csv(test_file, sep='|', index=False, header=None)
         X_test, y_test = extend_embedd_subset(
-            dataset=test_file,
-            word_embedding_used=word_embedding_used,
+            test_file,
+            embedding_dict,
+            embedding_size,
             sentence_embedding_method=sentence_embedding_method,
-            embedding_dict=embedding_dict,
-            embedding_size=embedding_size,
+            word_embedding_used=word_embedding_used,
             k=k
         )
 
@@ -112,6 +107,7 @@ def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epoch
             epochs=epochs,
             verbose=verbosity
         )
+
         scores = cnn.evaluate(
             X_test,
             y_test,
@@ -134,7 +130,7 @@ def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epoch
             f.write(f"\n  - Fold n°{fold}:\n")
             f.write(f"t_neg = {t_neg} | f_pos = {f_pos} | f_neg = {f_neg} | t_pos = {t_pos}\n")
             f.writelines(report)
-        save(cnn, f"fold_{fold}")
+        save(cnn, f"fold_{fold}\n")
         fold += 1
     with open(report_name, 'a', encoding='utf-8') as f:
         f.write(f"\n--- Total results after {folds} folds for vector size = {embedding_size} ---\n")
@@ -144,30 +140,20 @@ def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epoch
         f.write(f"Average f1 : {rnd(np.mean(f1_scores))} and standart deviation = {rnd(np.std(f1_scores))}\n")
         f.write("--- End ---")
 
-
-PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
-PATH_SEMANTIC = "pdtb/semantic_sentence_database.csv"
-
-if not os.path.isfile("semantic_sentence_database.csv"):
-    # .pipe -> single csv, semantic class
-    pdtb_preprocess.create_single_csv_from_pdtb(PATH_SEMANTIC, columns=[11, 12, 24, 34])
-    # get datadict containing all sentences
-    data_dict = pdtb_preprocess.split_single_csv_into_semantic_relation_files(PATH_SEMANTIC)
-    # generate random semantic database
-    gen_sentence_db.generate_random_selected_quadruples(data_dict, 25000)
-    print("[Log] - Initialization finished")
+if not os.path.isfile("generated_sentences.csv"):
+    output_sentence_file()
 
 EMBEDDING_SIZE = 50 # fastText dimension is 300
 K = 1
 SE_USED = 'AVG' # 'AVG' or 'DCT'
 
 train(
-    dataset_path="semantic_sentence_database.csv",
+    "generated_sentences.csv",
     epochs=10,
     batch_size=128,
     folds=10,
     embedding_size=EMBEDDING_SIZE,
-    word_embedding_used='glove', # 'fasttext' or 'glove'
+    word_embedding_used='glove', # 'fasttext' or 'glove',
     sentence_embedding_method=SE_USED,
     k=K
 )
