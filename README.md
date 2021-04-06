@@ -7,7 +7,7 @@ This repository contains a minified version of the word analogy classifier descr
 
 This version can be found in the ```word/``` directory
 
-The sentence analogy classification task can be found in the ```sentence/```
+The sentence analogy classification task can be found in the ```generated_sentences/```
 
 ## Details
 The word embedding is done with GloVe:
@@ -18,7 +18,7 @@ And the word dataset used is the Google's ```question-words.txt``` file
 ## Requirements
 To get all the files and the correct folder structure, lauch the ```dependencies.sh``` script.
 
-## Run the CNN
+## Run the CNNs
 #### Word classification task
 * Go into the ```word/``` directory
 ```$ cd word/```
@@ -29,10 +29,10 @@ To get all the files and the correct folder structure, lauch the ```dependencies
 $ python3 main_word_classification.py
 ```
 #### Sentence classification task
-* Go into the ```sentence/``` directory
-```$ cd sentence/```
-* Choose the embedding size at ```line 102``` in ```main_sentence_classification.py```
-* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 104```
+* Go into the ```generated_sentences/``` directory
+```$ cd generated_sentences/```
+* Choose the embedding size at ```line 146``` in ```main_sentence_classification.py```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 150```
 * Start the main_sentence_classification.py script with the following command line:
 ```
 $ python3 main_sentence_classification.py
@@ -41,7 +41,15 @@ $ python3 main_sentence_classification.py
 * Go into the ```pdtb_sentence/``` directory
 ```$ cd pdtb_sentence/```
 * Please read and meet all the requirements layed out in the ```pdtb_sentence/README.md``` file
+* Choose the embedding size at ```line 160``` in ```main_pdtb_sentence_classification.py```
+* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 164```
+* Start the main_pdtb_sentence_classification.py script with the following command line:
+```
+$ python3 main_pdtb_sentence_classification.py
+```
 
+## Run the Random Forest classifier
+* Check the ```sentence_forest/README_sentence_forest``` file.
 
 ## Example for the word classification task
 * These are the final results obtained after running the CNN
