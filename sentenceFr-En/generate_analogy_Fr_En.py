@@ -92,17 +92,8 @@ def create_clean_reduced_list(filename):
 def generate_analogy_from_pair_Fr_En(fr, en, number): 
 	"""Create a single .csv of analogies between sentences Fr_En"""
 	with open("analogy_Fr_En.csv", 'w') as f: 
-		csv_file = csv.writer(f,delimiter=',')
+		csv_file = csv.writer(f, delimiter='|')
 		for i in range(number):
 			row=(fr[i],en[i],fr[i+1],en[i+1])
 			csv_file.writerow(row)
 '''END UTILITIES'''
-
-'''MAIN'''
-en_file="europarl-v7.fr-en.en"
-fr_file="europarl-v7.fr-en.fr"
-en=create_clean_reduced_list(en_file)
-fr=create_clean_reduced_list(fr_file)
-
-number=5
-generate_analogy_from_pair_Fr_En(fr, en, number)
