@@ -106,13 +106,20 @@ def save_clean_reduced(filename):
     save_clean_sentences(lines, filename+'_reduced.pkl')
     return filename+'_reduced.pkl'
 
-def create_single_csv_from_pickle(fr,en): #fr and en are 2 lists of the same length
+def generate_pair_Fr_En_from_pickle(fr,en): #fr and en are 2 lists of the same length
     """Creates a single .csv containing all pair sentences (s_in_fr,s_in_en)"""
     with open("output.csv", 'w') as f: 
         csv_file = csv.writer(f)
         for i in range(len(fr)):
             row=fr[i]+","+en[i]
             csv_file.writerow(row)
+            
+            
+def generate_analogy_from_pair_Fr_En(pair_file, number): 
+    """Create a single .csv of analogy between sentences Fr_EN"""
+    
+    
+    
 '''END UTILITIES'''
 
 '''MAIN'''
@@ -122,4 +129,4 @@ filename = 'europarl-v7.fr-en.fr'
 fr_pkl=save_clean_reduced(filename)
 en=pd.read_pickle(en_pkl)  
 fr=pd.read_pickle(fr_pkl)
-create_single_csv_from_pickle(fr,en)
+generate_pair_Fr_En_from_pickle(fr,en)
