@@ -1,8 +1,9 @@
-import pdtb_preprocess
 import gen_sentence_db
 from extend_sentences import extend_embedd_subset
 from embedd_sentences import glove_dict, load_vectors_fasttext
 from utils import rnd, save
+
+from generate_analogy_Fr_En import create_clean_reduced_list, generate_analogy_from_pair_Fr_En
 
 import random
 import os.path
@@ -17,7 +18,6 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix, classification_report, precision_score, recall_score, f1_score
 
 import tensorflow as tf
-
 
 def cnn_model(shape=(50, 4, 1)):
     model = Sequential([
@@ -48,7 +48,7 @@ def cnn_model(shape=(50, 4, 1)):
 
 
 def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epochs=10, batch_size=32, folds=10, embedding_size=50):
-    report_name = f"reports/{embedding_size}/report_{word_embedding_used}_{sentence_embedding_method}_wv{embedding_size}_e{epochs}_batch{batch_size}_.txt"
+    report_name = f"reports/{embedding_size}_report_{word_embedding_used}_{sentence_embedding_method}_wv{embedding_size}_e{epochs}_batch{batch_size}_.txt"
     with open(report_name, 'w') as f:
         f.write("--- Training starts ---\n")
         f.write(f"- Parameters : epochs = {epochs} | batch_size = {batch_size} |folds = {folds} | Word vector size = {embedding_size}\n")
@@ -145,16 +145,16 @@ def train(dataset_path, word_embedding_used, sentence_embedding_method, k, epoch
         f.write("--- End ---")
 
 
-PATH_TO_CSV = "pdtb/pdtb_sentences.csv"
-PATH_SEMANTIC = "pdtb/semantic_sentence_database.csv"
+PATH_TO_CSV = "analogy_Fr_En.csv"
 
-if not os.path.isfile("semantic_sentence_database.csv"):
-    # .pipe -> single csv, semantic class
-    pdtb_preprocess.create_single_csv_from_pdtb(PATH_SEMANTIC, columns=[11, 12, 24, 34])
-    # get datadict containing all sentences
-    data_dict = pdtb_preprocess.split_single_csv_into_semantic_relation_files(PATH_SEMANTIC)
-    # generate random semantic database
-    gen_sentence_db.generate_random_selected_quadruples(data_dict, 25000)
+if not os.path.isfile("analogy_Fr_En.csv"):
+    en_file="europarl-v7.fr-en.en"
+    fr_file="europarl-v7.fr-en.fr"
+    en=create_clean_reduced_list(en_file)
+    fr=create_clean_reduced_list(fr_file)
+    number=1000 #number of analogies to be created
+    generate_analogy_from_pair_Fr_En(fr, en, number)
+    
     print("[Log] - Initialization finished")
 
 EMBEDDING_SIZE = 50 # fastText dimension is 300
@@ -162,7 +162,7 @@ K = 1
 SE_USED = 'AVG' # 'AVG' or 'DCT'
 
 train(
-    dataset_path="semantic_sentence_database.csv",
+    dataset_path="analogy_Fr_En.csv",
     epochs=10,
     batch_size=128,
     folds=10,
