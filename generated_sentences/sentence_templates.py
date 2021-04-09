@@ -1,11 +1,11 @@
 # Common capital cities template sentences
 ccc_sentences = (
-    ("They traveled to $", "They took a trip to $"),
+    ("They travelled to $", "They took a trip to $"),
     ("She arrived yesterday in $", "She just landed in $"),
     ("We just came back from $", "We arrived yesterday from $"),
     ("I took my vacations in $", "I flew to $ for these summer vacation"),
     (
-        "My internship supervisor is born in $",
+        "My internship supervisor was born in $",
         "My internship supervisor comes from $"
     ),
     ("Tomorrow I'll be going to $", "I have to travel to $ tomorrow"),
