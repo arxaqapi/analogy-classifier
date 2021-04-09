@@ -75,7 +75,7 @@ def train_on_full_dataset(
         embedding_size=embedding_size,
         k=k
     )
-
+    print("[Log] - Extension of the dataset finished, training starts ...")
     cnn = cnn_model(input_shape)
 
     cnn.fit(
