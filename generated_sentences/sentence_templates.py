@@ -113,10 +113,11 @@ opp_sentences = (  # switch with opposite, get 2 sentences with relations r
     ("With such an husband her misery was considered [certain]"),
     ("He spoke of it as a [certain] event, of which the time alone could be undecided"),
     ("He spoke of it as a certain event, of which the time alone could be [decided]"),
+    ("He spoke of it as a [certain] event, of which the time alone could be [decided]"),
     ("I ask only a [comfortable] home"),
     ("He also felt relatively [comfortable]")
 )
-
+# a is replaced with an in all needed situation
 def count_sentence_templates():
     n_ccc = len(ccc_sentences) * 2
     n_cis = len(cis_sentences)
