@@ -3,6 +3,8 @@
 .local
 .keras
 .cache
+.bash_history
+.python_history
 # workflow
 cnn_model/
 data/
