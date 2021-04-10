@@ -22,10 +22,42 @@ def generate_random_selected_quadruples(datadict, n=20000):
         csv_file = csv.writer(f, delimiter='|')
         for relation in datadict.keys():
             if relation == '':
-                continue
-            rel_sentences = datadict[relation]
+                continue # to next iteration, values are empty
+            rel_sentences = datadict[relation] # list of pairs a:b
             for _ in range(int(n / 4)):
                 ab = random.choice(rel_sentences)
                 cd = random.choice(rel_sentences)
                 quad = (ab+cd)
                 csv_file.writerow(quad)
+
+
+def generate_random_aaaa_abab(datadict, n=10000):
+    prefix = "evaluation_files/"
+    aaaa = []
+    abab = []
+    with open(prefix + f"{n}_generated_aaaa_sentences.csv", 'w') as f:
+        csv_file = csv.writer(f, delimiter='|')
+        for relation in datadict.keys():
+            if relation == '':
+                continue # to next iteration, values are empty
+            rel_sentences = datadict[relation] # list of pairs a:b
+            for _ in range(int(n / 4)):
+                a = random.choice(rel_sentences)[0]
+                # cd = random.choice(rel_sentences)
+                quad = ([a] * 4)
+                aaaa.append(quad)
+                csv_file.writerow(quad)
+
+    with open(prefix + f"{n}_generated_abab_sentences.csv", 'w') as f:
+        csv_file = csv.writer(f, delimiter='|')
+        for relation in datadict.keys():
+            if relation == '':
+                continue # to next iteration, values are empty
+            rel_sentences = datadict[relation] # list of pairs a:b
+            for _ in range(int(n / 4)):
+                ab = random.choice(rel_sentences)
+                # cd = random.choice(rel_sentences)
+                quad = (ab * 2)
+                abab.append(quad)
+                csv_file.writerow(quad)
+    return aaaa, abab
