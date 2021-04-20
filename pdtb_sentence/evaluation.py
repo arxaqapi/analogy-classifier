@@ -1,7 +1,7 @@
 from extend_sentences import extend_embedd_subset
 from embedd_sentences import glove_dict, load_vectors_fasttext, embedd_row, EmbeddingError
 from gen_sentence_db import generate_random_aaaa_abab
-from pdtb_preprocess import split_single_csv_into_semantic_relation_files
+from pdtb_preprocess import split_single_csv_into_L1_relations
 from utils import rnd, write_to_file
 
 import os
@@ -97,7 +97,7 @@ def train_on_full_dataset(
 
 
 def create_evaluation_dataset(n):
-    datadict = split_single_csv_into_semantic_relation_files("pdtb/semantic_sentence_database.csv")
+    datadict = split_single_csv_into_L1_relations("pdtb/semantic_sentence_database.csv")
     return generate_random_aaaa_abab(datadict=datadict, n=n)    
 
 

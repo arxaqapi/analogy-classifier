@@ -152,7 +152,7 @@ if not os.path.isfile("semantic_sentence_database.csv"):
     # .pipe -> single csv, semantic class
     pdtb_preprocess.create_single_csv_from_pdtb(PATH_SEMANTIC, columns=[11, 12, 24, 34])
     # get datadict containing all sentences
-    data_dict = pdtb_preprocess.split_single_csv_into_semantic_relation_files(PATH_SEMANTIC)
+    data_dict = pdtb_preprocess.split_single_csv_into_L1_relations(PATH_SEMANTIC)
     # generate random semantic database
     gen_sentence_db.generate_random_selected_quadruples(data_dict, 25000)
     print("[Log] - Initialization finished")
