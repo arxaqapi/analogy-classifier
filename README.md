@@ -1,33 +1,11 @@
-# analogy-classifier
+# Analogical proportions between sentences: Theoretical aspects and preliminary experiments
 
-This repository contains a minified version of the word analogy classifier described in the following paper:
+This repository contains the code that supports the paper [Analogies Between Sentences: Theoretical Aspects - Preliminary Experiments](https://link.springer.com/chapter/10.1007/978-3-030-86772-0_1).
 
-* Lim S., Prade H., Richard G. (2019) Solving Word Analogies: A Machine Learning Perspective. In: Kern-Isberner G., Ognjanović Z. (eds) Symbolic and Quantitative Approaches to Reasoning with Uncertainty. ECSQARU 2019. Lecture Notes in Computer Science, vol 11726. Springer, Cham. https://doi.org/10.1007/978-3-030-29765-7_20
-* https://github.com/gillesirit/analogy
-
-This version can be found in the ```word/``` directory
-
-The sentence analogy classification task can be found in the ```generated_sentences/```
-
-## Details
-The word embedding is done with GloVe:
-* https://nlp.stanford.edu/projects/glove/
-
-And the word dataset used is the Google's ```question-words.txt``` file
-* http://download.tensorflow.org/data/questions-words.txt
 ## Requirements
 To get all the files and the correct folder structure, lauch the ```dependencies.sh``` script.
 
 ## Run the CNNs
-#### Word classification task
-* Go into the ```word/``` directory
-```$ cd word/```
-* Choose the embedding size at ```line 118``` in ```main_word_classification.py```
-* Choose the number of ```epochs```, ```folds``` and ```batch_size``` in the train function at ```line 120```
-* Start the main_word_classification.py script with the following command line:
-```
-$ python3 main_word_classification.py
-```
 #### Sentence classification task
 * Go into the ```generated_sentences/``` directory
 ```$ cd generated_sentences/```
@@ -51,33 +29,24 @@ $ python3 main_pdtb_sentence_classification.py
 ## Run the Random Forest classifier
 * Check the ```sentence_forest/README_sentence_forest``` file.
 
-## Example for the word classification task
-* These are the final results obtained after running the CNN
-```
-Score per fold
-------------------------------------------------------------------------
-> Fold 1 - Loss: 0.012598558329045773 - Accuracy: 99.48833584785461%
-------------------------------------------------------------------------
-> Fold 2 - Loss: 0.013211878016591072 - Accuracy: 99.44356679916382%
-------------------------------------------------------------------------
-> Fold 3 - Loss: 0.014221073128283024 - Accuracy: 99.44570064544678%
-------------------------------------------------------------------------
-> Fold 4 - Loss: 0.010443086735904217 - Accuracy: 99.63757395744324%
-------------------------------------------------------------------------
-> Fold 5 - Loss: 0.01332341879606247 - Accuracy: 99.50112700462341%
-------------------------------------------------------------------------
-> Fold 6 - Loss: 0.009229166433215141 - Accuracy: 99.66741800308228%
-------------------------------------------------------------------------
-> Fold 7 - Loss: 0.00995730608701706 - Accuracy: 99.60558414459229%
-------------------------------------------------------------------------
-> Fold 8 - Loss: 0.011852254159748554 - Accuracy: 99.53949451446533%
-------------------------------------------------------------------------
-> Fold 9 - Loss: 0.016403404995799065 - Accuracy: 99.37320351600647%
-------------------------------------------------------------------------
-> Fold 10 - Loss: 0.008707469329237938 - Accuracy: 99.70365762710571%
-------------------------------------------------------------------------
-Average scores for all folds:
-> Accuracy: 99.5405662059784 (+- 0.10345591582293846)
-> Loss: 0.01199476160109043
-------------------------------------------------------------------------
+
+## Cite us
+```bibtex
+@InProceedings{10.1007/978-3-030-86772-0_1,
+    author="Afantenos, Stergos
+        and Kunze, Tarek
+        and Lim, Suryani
+        and Prade, Henri
+        and Richard, Gilles",
+    editor="Vejnarov{\'a}, Ji{\v{r}}ina 
+        and Wilson, Nic",
+    title="Analogies Between Sentences: Theoretical Aspects - Preliminary Experiments",
+    booktitle="Symbolic and Quantitative Approaches to Reasoning with Uncertainty",
+    year="2021",
+    publisher="Springer International Publishing",
+    address="Cham",
+    pages="3--18",
+    abstract="Analogical proportions hold between 4 items a, b, c, d insofar as we can consider that ``a is to b as c is to d''. Such proportions are supposed to obey postulates, from which one can derive Boolean or numerical models that relate vector-based representations of items making a proportion. One basic postulate is the preservation of the proportion by permuting the central elements b and c. However this postulate becomes debatable in many cases when items are words or sentences. This paper proposes a weaker set of postulates based on internal reversal, from which new Boolean and numerical models are derived. The new system of postulates is used to extend a finite set of examples in a machine learning perspective. By embedding a whole sentence into a real-valued vector space, we tested the potential of these weaker postulates for classifying analogical sentences into valid and non-valid proportions. It is advocated that identifying analogical proportions between sentences may be of interest especially for checking discourse coherence, question-answering, argumentation and computational creativity. The proposed theoretical setting backed with promising preliminary experimental results also suggests the possibility of crossing a real-valued embedding with an ontology-based representation of words. This hybrid approach might provide some insights to automatically extract analogical proportions in natural language corpora.",
+    isbn="978-3-030-86772-0"
+}
 ```

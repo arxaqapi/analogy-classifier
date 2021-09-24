@@ -12,7 +12,5 @@ mkdir -p generated_sentences/reports/50/ generated_sentences/reports/100/ genera
 
 mkdir -p pdtb_sentence/temp/
 mkdir -p pdtb_sentence/pdtb_split/
-mkdir -p pdtb_sentence/pdtb_L1_split/
-mkdir -p pdtb_sentence/cnn_final_models/
-mkdir -p pdtb_sentence/evaluation_files/
+mkdir -p pdtb_sentence/pdtb_semantic_split/
 mkdir -p pdtb_sentence/reports/50/ pdtb_sentence/reports/100/ pdtb_sentence/reports/200/ pdtb_sentence/reports/300/

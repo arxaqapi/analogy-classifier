@@ -186,7 +186,7 @@ def gna_gen():  # nationality adj sent gen
 
 
 def opp_dict(path="google_split/gram2-opposite.txt"):
-    # 28 values in data_dict for "google_split/gram2-opposite.txt"
+    # 28 valeur dans dict for "google_split/gram2-opposite.txt"
     data_dict = {}
     df = pd.read_csv(path, delimiter=' ', header=None)
     step = 28
